@@ -1,0 +1,69 @@
+.kyoto piece.p-piece.ally {
+    background-image: url('../../images/pieces/shogi/ctk/0FUKyoto.svg');
+}
+/* rook */
+.kyoto piece.pp-piece.ally {
+    background-image: url('../../images/pieces/shogi/ctk/0HI.svg');
+}
+.kyoto piece.n-piece.ally {
+    background-image: url('../../images/pieces/shogi/ctk/0KE.svg');
+}
+/* gold */
+.kyoto piece.pn-piece.ally {
+    background-image: url('../../images/pieces/shogi/ctk/0KI.svg');
+}
+.kyoto piece.l-piece.ally {
+    background-image: url('../../images/pieces/shogi/ctk/0KY.svg');
+}
+/* tokin */
+.kyoto piece.pl-piece.ally {
+    background-image: url('../../images/pieces/shogi/ctk/0TOKyoto.svg');
+}
+.kyoto piece.s-piece.ally {
+    background-image: url('../../images/pieces/shogi/ctk/0GI.svg');
+}
+/* bishop */
+.kyoto piece.ps-piece.ally {
+    background-image: url('../../images/pieces/shogi/ctk/0KA.svg');
+}
+.kyoto piece.k-piece.white.ally {
+    background-image: url('../../images/pieces/shogi/ctk/0GY.svg');
+}
+.kyoto piece.k-piece.black.ally {
+    background-image: url('../../images/pieces/shogi/ctk/0OU.svg');
+}
+
+.kyoto piece.p-piece.enemy {
+    background-image: url('../../images/pieces/shogi/ctk/1FUKyoto.svg');
+}
+/* rook */
+.kyoto piece.pp-piece.enemy {
+    background-image: url('../../images/pieces/shogi/ctk/1HI.svg');
+}
+.kyoto piece.n-piece.enemy {
+    background-image: url('../../images/pieces/shogi/ctk/1KE.svg');
+}
+/* gold */
+.kyoto piece.pn-piece.enemy {
+    background-image: url('../../images/pieces/shogi/ctk/1KI.svg');
+}
+.kyoto piece.l-piece.enemy {
+    background-image: url('../../images/pieces/shogi/ctk/1KY.svg');
+}
+/* tokin */
+.kyoto piece.pl-piece.enemy {
+    background-image: url('../../images/pieces/shogi/ctk/1TOKyoto.svg');
+}
+.kyoto piece.s-piece.enemy {
+    background-image: url('../../images/pieces/shogi/ctk/1GI.svg');
+}
+/* bishop */
+.kyoto piece.ps-piece.enemy {
+    background-image: url('../../images/pieces/shogi/ctk/1KA.svg');
+}
+.kyoto piece.k-piece.white.enemy {
+    background-image: url('../../images/pieces/shogi/ctk/1GY.svg');
+}
+.kyoto piece.k-piece.black.enemy {
+    background-image: url('../../images/pieces/shogi/ctk/1OU.svg');
+}

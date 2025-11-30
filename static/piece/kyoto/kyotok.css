@@ -1,0 +1,60 @@
+.kyoto piece.p-piece.ally {
+    background-image: url('../../images/pieces/kyoto/Kanji/0FU.svg');
+}
+.kyoto piece.pp-piece.ally {
+    background-image: url('../../images/pieces/kyoto/Kanji/0HI.svg');
+}
+.kyoto piece.n-piece.ally {
+    background-image: url('../../images/pieces/kyoto/Kanji/0KE.svg');
+}
+.kyoto piece.pn-piece.ally {
+    background-image: url('../../images/pieces/kyoto/Kanji/0KI.svg');
+}
+.kyoto piece.l-piece.ally {
+    background-image: url('../../images/pieces/kyoto/Kanji/0KY.svg');
+}
+.kyoto piece.pl-piece.ally {
+    background-image: url('../../images/pieces/kyoto/Kanji/0TO.svg');
+}
+.kyoto piece.s-piece.ally {
+    background-image: url('../../images/pieces/kyoto/Kanji/0GI.svg');
+}
+.kyoto piece.ps-piece.ally {
+    background-image: url('../../images/pieces/kyoto/Kanji/0KA.svg');
+}
+.kyoto piece.k-piece.white.ally {
+    background-image: url('../../images/pieces/shogi/ctk/0GY.svg');
+}
+.kyoto piece.k-piece.black.ally {
+    background-image: url('../../images/pieces/shogi/ctk/0OU.svg');
+}
+.kyoto piece.p-piece.enemy {
+    background-image: url('../../images/pieces/kyoto/Kanji/1FU.svg');
+}
+.kyoto piece.pp-piece.enemy {
+    background-image: url('../../images/pieces/kyoto/Kanji/1HI.svg');
+}
+.kyoto piece.n-piece.enemy {
+    background-image: url('../../images/pieces/kyoto/Kanji/1KE.svg');
+}
+.kyoto piece.pn-piece.enemy {
+    background-image: url('../../images/pieces/kyoto/Kanji/1KI.svg');
+}
+.kyoto piece.l-piece.enemy {
+    background-image: url('../../images/pieces/kyoto/Kanji/1KY.svg');
+}
+.kyoto piece.pl-piece.enemy {
+    background-image: url('../../images/pieces/kyoto/Kanji/1TO.svg');
+}
+.kyoto piece.s-piece.enemy {
+    background-image: url('../../images/pieces/kyoto/Kanji/1GI.svg');
+}
+.kyoto piece.ps-piece.enemy {
+    background-image: url('../../images/pieces/kyoto/Kanji/1KA.svg');
+}
+.kyoto piece.k-piece.white.enemy {
+    background-image: url('../../images/pieces/shogi/ctk/1GY.svg');
+}
+.kyoto piece.k-piece.black.enemy {
+    background-image: url('../../images/pieces/shogi/ctk/1OU.svg');
+}

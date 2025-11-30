@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   height="92"
+   width="92"
+   version="1.1"
+   id="svg34"
+   sodipodi:docname="xiangqi-cannon.svg"
+   inkscape:version="1.2.2 (b0a8486541, 2022-12-01)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg">
+  <defs
+     id="defs38" />
+  <sodipodi:namedview
+     id="namedview36"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="11.163043"
+     inkscape:cx="46"
+     inkscape:cy="45.955209"
+     inkscape:window-width="2494"
+     inkscape:window-height="1371"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="svg34" />
+  <path
+     d="m 8.3237704,13.825133 61.9897716,22.87554 c 0,0 5.249354,5.273117 1.507531,12.232933 l -0.04915,0.171504 -0.04915,0.171499 C 68.109387,56.279347 60.278951,55.867073 60.278951,55.867073 35.731199,38.962403 16.260337,32.374718 2.3634663,25.111029 c 0.216114,-2.302035 1.4091972,-4.198084 2.151356,-6.281515 1.0044998,-1.778323 2.1208781,-3.510141 3.8089481,-5.004381 z"
+     stroke-width="1.64672"
+     id="path2"
+     style="fill:#888888;stroke:#888888;stroke-miterlimit:10" />
+  <ellipse
+     cx="-83.466194"
+     cy="25.896029"
+     rx="2.5093923"
+     ry="2.101377"
+     stroke-width="1.8619"
+     transform="matrix(-0.95451137,-0.29817452,-0.29817452,0.95451137,0,0)"
+     id="ellipse4"
+     style="fill:#888888;stroke:#888888;stroke-miterlimit:10" />
+  <path
+     d="m 30.598036,41.628113 0.147356,14.101541 27.784196,2.800408 C 70.44138,75.035979 76.992789,76.407363 88.965604,70.566317 75.440126,66.369567 68.359504,53.3631 60.523065,41.823997 Z"
+     stroke-width="1.23677"
+     id="path8"
+     style="fill:#888888;stroke:#888888;stroke-linecap:square" />
+  <circle
+     cx="27.791016"
+     cy="60.442768"
+     stroke-linejoin="bevel"
+     stroke-width="1.34558"
+     transform="rotate(-5.072661)"
+     id="ellipse10"
+     style="fill:#888888;stroke:#888888;stroke-linecap:square"
+     r="20.00683" />
+</svg>

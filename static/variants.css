@@ -1,0 +1,16 @@
+@import "group-colors.css";
+.guide p img, .guide table {
+    margin: 0 auto;
+}
+.guide p img {
+    display: block;
+}
+.guide table th, .guide table td {
+    text-align: center;
+    padding: 4px;
+}
+div.guide ol, div.guide ul {
+    list-style-position: inside;
+    padding: 1.2rem;
+    margin: 0;
+}

@@ -1,0 +1,39 @@
+.synochess piece.p-piece.white {
+    background-image: url('../../images/pieces/green/wP.svg');
+}
+.synochess piece.b-piece.white {
+    background-image: url('../../images/pieces/green/wB.svg');
+}
+.synochess piece.n-piece.white {
+    background-image: url('../../images/pieces/green/wN.svg');
+}
+.synochess piece.r-piece.white {
+    background-image: url('../../images/pieces/green/wR.svg');
+}
+.synochess piece.q-piece.white {
+    background-image: url('../../images/pieces/green/wQ.svg');
+}
+.synochess piece.k-piece.white {
+    background-image: url('../../images/pieces/green/wK.svg');
+}
+.synochess piece.s-piece.black {
+    background-image: url('../../images/pieces/green/syno-red/bP.svg');
+}
+.synochess piece.e-piece.black {
+    background-image: url('../../images/pieces/green/syno-red/bE.svg');
+}
+.synochess piece.n-piece.black {
+    background-image: url('../../images/pieces/green/syno-red/bN.svg');
+}
+.synochess piece.r-piece.black {
+    background-image: url('../../images/pieces/green/syno-red/bR.svg');
+}
+.synochess piece.a-piece.black {
+    background-image: url('../../images/pieces/green/syno-red/bA.svg');
+}
+.synochess piece.c-piece.black {
+    background-image: url('../../images/pieces/green/syno-red/bC.svg');
+}
+.synochess piece.k-piece.black {
+    background-image: url('../../images/pieces/green/syno-red/bK.svg');
+}

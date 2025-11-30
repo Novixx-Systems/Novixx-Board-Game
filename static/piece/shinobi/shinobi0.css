@@ -1,0 +1,61 @@
+.shinobi piece.p-piece.white {
+    background-image: url('../../images/pieces/shinobi/merida/wP.svg');
+}
+.shinobi piece.l-piece.white {
+    background-image: url('../../images/pieces/shinobi/merida/wL.svg');
+}
+.shinobi piece.h-piece.white {
+    background-image: url('../../images/pieces/shinobi/merida/wH.svg');
+}
+.shinobi piece.c-piece.white {
+    background-image: url('../../images/pieces/shinobi/merida/wC.svg');
+}
+.shinobi piece.k-piece.white {
+    background-image: url('../../images/pieces/shinobi/merida/wK.svg');
+}
+.shinobi piece.m-piece.white {
+    background-image: url('../../images/pieces/shinobi/merida/wM.svg');
+}
+.shinobi piece.d-piece.white {
+    background-image: url('../../images/pieces/shinobi/merida/wD.svg');
+}
+.shinobi piece.j-piece.white {
+    background-image: url('../../images/pieces/shinobi/merida/wJ.svg');
+}
+.shinobi piece.f-piece.white {
+    background-image: url('../../images/pieces/shinobi/merida/wF.svg');
+}
+.shinobi piece.pp-piece.white {
+    background-image: url('../../images/pieces/shinobi/merida/wC.svg');
+}
+.shinobi piece.pl-piece.white {
+    background-image: url('../../images/pieces/shinobi/merida/wR.svg');
+}
+.shinobi piece.ph-piece.white {
+    background-image: url('../../images/pieces/shinobi/merida/wN.svg');
+}
+.shinobi piece.pm-piece.white {
+    background-image: url('../../images/pieces/shinobi/merida/wB.svg');
+}
+
+.shinobi piece.p-piece.black {
+    background-image: url('../../images/pieces/merida/bP.svg');
+}
+.shinobi piece.n-piece.black {
+    background-image: url('../../images/pieces/merida/bN.svg');
+}
+.shinobi piece.b-piece.black {
+    background-image: url('../../images/pieces/merida/bB.svg');
+}
+.shinobi piece.r-piece.black {
+    background-image: url('../../images/pieces/merida/bR.svg');
+}
+.shinobi piece.pp-piece.black {
+    background-image: url('../../images/pieces/shogun/merida/mono/bC.svg');
+}
+.shinobi piece.k-piece.black {
+    background-image: url('../../images/pieces/merida/bK.svg');
+}
+.shinobi piece.q-piece.black {
+    background-image: url('../../images/pieces/merida/bQ.svg');
+}

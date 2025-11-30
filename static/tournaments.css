@@ -1,0 +1,156 @@
+*, ::before, ::after {
+    box-sizing: inherit;
+    margin: 0;
+    padding: 0;
+}
+.tournaments {
+    grid-area: main;
+    max-width: 1000px;
+    margin: auto;
+    width: 100%;
+}
+#main-wrap {
+    --main-max-width: 1300px;
+}
+a {
+    white-space:unset;
+}
+.box-pad, .box:not(.box-pad) > h1 {
+    padding: 5vh var(--box-padding);
+}
+.box {
+    --box-padding: 15px;
+}
+@media (min-width: 320px) {
+    .box {
+        --box-padding: calc( 15px + 45 * ((100vw - 320px) / 880));
+    }
+}
+@media (min-width: 1200px) {
+    .box {
+        --box-padding: 60px;
+    }
+}
+.box-top {
+    display: flex;
+    flex-flow: row wrap;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5vh;
+}
+h1 {
+    font-size: 40px;
+}
+.actions {
+    display: flex;
+    flex-flow: row wrap;
+}
+a.button.icon-plus-square, a.button.calendar {
+    color: #fff;
+    background: var(--green-switch);
+    box-shadow: 0 2px 5px 0 rgba(0,0,0,0.225);
+    border-radius: 3px;
+    padding: 0.8em 1em;
+    border: none;
+    text-align: center;
+    white-space: nowrap;
+    transition: all 150ms;
+    margin-left: 4px;
+}
+.text::before {
+    margin-right: 0.4em;
+}
+th {
+    font: inherit;
+    vertical-align: middle;
+    text-align: inherit;
+}
+.slist {
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    width: 100%;
+    border-bottom: 1px solid #d9d9d9;
+    margin-bottom: 3em;
+    border-collapse: collapse;
+}
+.slist thead {
+    background: var(--bg-color2);
+}
+.slist th:first-child {
+    padding-left: 1.5rem;
+}
+.slist thead th {
+    border-top: 1px solid #d9d9d9;
+    border-bottom: 1px solid #d9d9d9;
+    padding: 0.5rem 0.8rem;
+}
+.header a .name, .system, .starts {
+    display: block;
+}
+.header a .name {
+    font-size: 1.4em;
+}
+.by, td .icon {
+    color: var(--gold);
+}
+td .icon {
+    text-align: center;
+    font-size: 3.5em;
+}
+.slist tbody tr:nth-child(2n) {
+    background-color: var(--bg-color2)
+}
+.slist td {
+    padding: 1rem;
+    font: inherit;
+}
+.slist td:last-child {
+    text-align: right;
+}
+td a {
+    display: block;
+    color: var(--font-color);
+    padding: 1em;
+}
+td.header {
+    padding: 0;
+    transition: 150ms all;
+}
+td.header:hover {
+    transform: translateX(3px);
+}
+.header .name, .header .system {
+    letter-spacing: 2px;
+}
+.name {
+    margin-top: 0.5em;
+}
+.starts {
+    opacity: 0.9;
+    font-size: 90%;
+}
+.system {
+    margin: 0.5em 0;
+}
+@media (max-width: 800px) {
+    td .icon {
+        font-size: 2.5em;
+    }
+    .shield-trophy {
+        font-size: 2em;
+        line-height: 3.7em;
+        height: 4em;
+    }
+    .header .name, .header .system {
+        letter-spacing: unset;
+    }
+    .slist {
+        font-size: 95%;
+    }
+    .slist td {
+        padding: 0.5em;
+    }
+    .slist td.infos {
+        padding: 0;
+    }
+}

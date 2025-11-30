@@ -1,0 +1,119 @@
+.page-menu.small {
+    max-width: 1000px;
+    width:100%;
+    margin: auto;
+}
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+tr.player-data {
+    display: table-row;
+}
+td {
+    padding: 1rem;
+}
+td rank {
+    padding-left: 2rem;
+}
+td rating {
+    padding-right: 5rem;
+}
+.page-menu.players {
+    grid-gap: 0;
+}
+.allplayers-button {
+    padding-bottom: 1em;
+    display: inline-block;
+}
+.highscore, .shields, .winners {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(30ch, 1fr));
+    padding-left: 2px;
+    grid-gap: 0;
+    border: 1px solid var(--border-color);
+    padding: 0;
+    border-radius: 0;
+}
+.small aside .highscore {
+    border: 0;
+}
+.card {
+    border: 1px solid var(--leaderboard);
+    border-radius: .25rem;
+    background-color: var(--bg-color1);
+}
+.highscore h1, .shields h1, .winners h1 {
+    font-size: 2.5em;
+}
+.shields .card, .winners .card {
+    border: none;
+    border-right: 1px solid var(--border-color);
+    border-radius: 0;
+    box-shadow: var(--base-shadow);
+}
+.card div.info0 {
+    color: WhiteSmoke;
+    background-color: var(--gold);
+    padding: 0.2em;
+    margin-bottom: 0;
+}
+.card div.info0 a {
+    color: WhiteSmoke;
+}
+.winners .card div.info0 a {
+    color: var(--clock-running-color);
+}
+div.info0.icon::before {
+    opacity: 0.9;
+}
+.shields .card h2, .winners .card div.info0 {
+    color: var(--font-color);
+    background: var(--button-new-game);
+    text-shadow: 0 1px 0 var(--text-shadow);
+}
+.shields .card h2 {
+    padding-left: 95px;
+    position: relative;
+    font-size: 1.3em;
+    line-height: 2.5em;
+}
+.card h2 a {
+    display: block;
+}
+.shield-trophy {
+    position: absolute;
+    top: -11px;
+    left: 15px;
+    width: 67px;
+    height: 80px;
+}
+.card .player-data {
+    padding: .7rem .5rem .7rem .5rem;
+}
+.shields .player-data {
+    padding: 1.2rem 1.2rem 1.2rem 0.5rem;
+}
+div.card div.player-data:nth-child(2n), tr.player-data:nth-child(2n + 1) {
+  background-color: var(--bg-color1);
+}
+div.card div.player-data:nth-child(2n + 1), tr.player-data:nth-child(2n) {
+  background-color: var(--table-even);
+}
+.tourney-date {
+    float: right;
+    font-size: 16px;
+}
+.user-link.player {
+    display: inline-block;
+    text-overflow: ellipsis;
+    width: 60%;
+}
+.user-link.player, 
+table#players a,
+.flat-bg .highscore a {
+    white-space: nowrap;
+}
+.user-link.tourney-date {
+    color: var(--link-color-blue);
+}

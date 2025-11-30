@@ -1,0 +1,39 @@
+.standard piece._-piece {
+    background-image: url('../../images/pieces/santa/duck.png');
+}
+.standard piece.p-piece.white {
+    background-image: url('../../images/pieces/santa/wP.png');
+}
+.standard piece.b-piece.white {
+    background-image: url('../../images/pieces/santa/wB.png');
+}
+.standard piece.n-piece.white {
+    background-image: url('../../images/pieces/santa/wN.png');
+}
+.standard piece.r-piece.white {
+    background-image: url('../../images/pieces/santa/wR.png');
+}
+.standard piece.q-piece.white {
+    background-image: url('../../images/pieces/santa/wQ.png');
+}
+.standard piece.k-piece.white {
+    background-image: url('../../images/pieces/santa/wK.png');
+}
+.standard piece.p-piece.black {
+    background-image: url('../../images/pieces/santa/bP.png');
+}
+.standard piece.b-piece.black {
+    background-image: url('../../images/pieces/santa/bB.png');
+}
+.standard piece.n-piece.black {
+    background-image: url('../../images/pieces/santa/bN.png');
+}
+.standard piece.r-piece.black {
+    background-image: url('../../images/pieces/santa/bR.png');
+}
+.standard piece.q-piece.black {
+    background-image: url('../../images/pieces/santa/bQ.png');
+}
+.standard piece.k-piece.black {
+    background-image: url('../../images/pieces/santa/bK.png');
+}

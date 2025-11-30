@@ -1,0 +1,25 @@
+{
+    "include": [
+        "client/**/*.ts"
+    ],
+    "compilerOptions": {
+        "paths": {
+            "@/*": [ "./client/*" ]
+        },
+        "noEmit": true,
+        "incremental": true,
+        "noImplicitAny": true,
+        "strictNullChecks": true,
+        "noUnusedLocals": true,
+        "alwaysStrict": true,
+        "noImplicitReturns": true,
+        "noUnusedParameters": true,
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "module": "es2020",
+        "moduleResolution": "node",
+        "lib": ["DOM", "es2020"],
+        "target": "es2020",
+        "isolatedModules": true
+    }
+}

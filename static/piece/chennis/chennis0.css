@@ -1,0 +1,55 @@
+.chennis piece.k-piece.white {
+    background-image: url('../../images/pieces/green/wK.svg');
+}
+.chennis piece.p-piece.white {
+    background-image: url('../../images/pieces/chennis/wPR.svg');
+}
+.chennis piece.pp-piece.white {
+    background-image: url('../../images/pieces/chennis/wRP.svg');
+}
+.chennis piece.m-piece.white {
+    background-image: url('../../images/pieces/chennis/wMN.svg');
+}
+.chennis piece.pm-piece.white {
+    background-image: url('../../images/pieces/chennis/wNM.svg');
+}
+.chennis piece.s-piece.white {
+    background-image: url('../../images/pieces/chennis/wSB.svg');
+}
+.chennis piece.ps-piece.white {
+    background-image: url('../../images/pieces/chennis/wBS.svg');
+}
+.chennis piece.f-piece.white {
+    background-image: url('../../images/pieces/chennis/wFC.svg');
+}
+.chennis piece.pf-piece.white {
+    background-image: url('../../images/pieces/chennis/wCF.svg');
+}
+
+.chennis piece.k-piece.black {
+    background-image: url('../../images/pieces/green/bK.svg');
+}
+.chennis piece.p-piece.black {
+    background-image: url('../../images/pieces/chennis/bPR.svg');
+}
+.chennis piece.pp-piece.black {
+    background-image: url('../../images/pieces/chennis/bRP.svg');
+}
+.chennis piece.m-piece.black {
+    background-image: url('../../images/pieces/chennis/bMN.svg');
+}
+.chennis piece.pm-piece.black {
+    background-image: url('../../images/pieces/chennis/bNM.svg');
+}
+.chennis piece.s-piece.black {
+    background-image: url('../../images/pieces/chennis/bSB.svg');
+}
+.chennis piece.ps-piece.black {
+    background-image: url('../../images/pieces/chennis/bBS.svg');
+}
+.chennis piece.f-piece.black {
+    background-image: url('../../images/pieces/chennis/bFC.svg');
+}
+.chennis piece.pf-piece.black {
+    background-image: url('../../images/pieces/chennis/bCF.svg');
+}

@@ -1,0 +1,49 @@
+.seirawan piece.h-piece.white {
+    background-image: url('../../images/pieces/merida/wA.svg');
+}
+.seirawan piece.e-piece.white {
+    background-image: url('../../images/pieces/merida/wC.svg');
+}
+.seirawan piece.h-piece.black {
+    background-image: url('../../images/pieces/merida/bA.svg');
+}
+.seirawan piece.e-piece.black {
+    background-image: url('../../images/pieces/merida/bC.svg');
+}
+
+.seirawan piece.p-piece.white {
+    background-image: url('../../images/pieces/merida/wP.svg');
+}
+.seirawan piece.b-piece.white {
+    background-image: url('../../images/pieces/merida/wB.svg');
+}
+.seirawan piece.n-piece.white {
+    background-image: url('../../images/pieces/merida/wN.svg');
+}
+.seirawan piece.r-piece.white {
+    background-image: url('../../images/pieces/merida/wR.svg');
+}
+.seirawan piece.q-piece.white {
+    background-image: url('../../images/pieces/merida/wQ.svg');
+}
+.seirawan piece.k-piece.white {
+    background-image: url('../../images/pieces/merida/wK.svg');
+}
+.seirawan piece.p-piece.black {
+    background-image: url('../../images/pieces/merida/bP.svg');
+}
+.seirawan piece.b-piece.black {
+    background-image: url('../../images/pieces/merida/bB.svg');
+}
+.seirawan piece.n-piece.black {
+    background-image: url('../../images/pieces/merida/bN.svg');
+}
+.seirawan piece.r-piece.black {
+    background-image: url('../../images/pieces/merida/bR.svg');
+}
+.seirawan piece.q-piece.black {
+    background-image: url('../../images/pieces/merida/bQ.svg');
+}
+.seirawan piece.k-piece.black {
+    background-image: url('../../images/pieces/merida/bK.svg');
+}

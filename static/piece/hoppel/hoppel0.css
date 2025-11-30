@@ -1,0 +1,36 @@
+.hoppel piece.p-piece.white {
+    background-image: url('../../images/pieces/merida/wP.svg');
+}
+.hoppel piece.b-piece.white {
+    background-image: url('../../images/pieces/merida/wB.svg');
+}
+.hoppel piece.n-piece.white {
+    background-image: url('../../images/pieces/merida/wN.svg');
+}
+.hoppel piece.r-piece.white {
+    background-image: url('../../images/pieces/merida/wR.svg');
+}
+.hoppel piece.q-piece.white {
+    background-image: url('../../images/pieces/merida/wQ.svg');
+}
+.hoppel piece.k-piece.white {
+    background-image: url('../../images/pieces/merida/wK.svg');
+}
+.hoppel piece.p-piece.black {
+    background-image: url('../../images/pieces/merida/bP.svg');
+}
+.hoppel piece.b-piece.black {
+    background-image: url('../../images/pieces/merida/bB.svg');
+}
+.hoppel piece.n-piece.black {
+    background-image: url('../../images/pieces/merida/bN.svg');
+}
+.hoppel piece.r-piece.black {
+    background-image: url('../../images/pieces/merida/bR.svg');
+}
+.hoppel piece.q-piece.black {
+    background-image: url('../../images/pieces/merida/bQ.svg');
+}
+.hoppel piece.k-piece.black {
+    background-image: url('../../images/pieces/merida/bK.svg');
+}

@@ -1,0 +1,43 @@
+.janggi piece.p-piece.white {
+    background-image: url('../../images/pieces/janggi/intlkakao/blue_pawn.svg');
+}
+.janggi piece.b-piece.white {
+    background-image: url('../../images/pieces/janggi/intlkakao/blue_elephant.svg');
+}
+.janggi piece.n-piece.white {
+    background-image: url('../../images/pieces/janggi/intlkakao/blue_horse.svg');
+}
+.janggi piece.r-piece.white {
+    background-image: url('../../images/pieces/janggi/intlkakao/blue_chariot.svg');
+}
+.janggi piece.a-piece.white {
+    background-image: url('../../images/pieces/janggi/intlkakao/blue_advisor.svg');
+}
+.janggi piece.c-piece.white {
+    background-image: url('../../images/pieces/janggi/intlkakao/blue_cannon.svg');
+}
+.janggi piece.k-piece.white {
+    background-image: url('../../images/pieces/janggi/intlkakao/blue_king.svg');
+}
+
+.janggi piece.p-piece.black {
+    background-image: url('../../images/pieces/janggi/intlkakao/red_pawn.svg');
+}
+.janggi piece.b-piece.black {
+    background-image: url('../../images/pieces/janggi/intlkakao/red_elephant.svg');
+}
+.janggi piece.n-piece.black {
+    background-image: url('../../images/pieces/janggi/intlkakao/red_horse.svg');
+}
+.janggi piece.r-piece.black {
+    background-image: url('../../images/pieces/janggi/intlkakao/red_chariot.svg');
+}
+.janggi piece.a-piece.black {
+    background-image: url('../../images/pieces/janggi/intlkakao/red_advisor.svg');
+}
+.janggi piece.c-piece.black {
+    background-image: url('../../images/pieces/janggi/intlkakao/red_cannon.svg');
+}
+.janggi piece.k-piece.black {
+    background-image: url('../../images/pieces/janggi/intlkakao/red_king.svg');
+}

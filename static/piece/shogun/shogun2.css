@@ -1,0 +1,68 @@
+
+.shogun piece.p-piece.black {
+    background-image: url('../../images/pieces/merida/bP.svg');
+}
+.shogun piece.b-piece.black {
+    background-image: url('../../images/pieces/merida/bB.svg');
+}
+.shogun piece.n-piece.black {
+    background-image: url('../../images/pieces/merida/bN.svg');
+}
+.shogun piece.r-piece.black {
+    background-image: url('../../images/pieces/merida/bR.svg');
+}
+.shogun piece.f-piece.black {
+    background-image: url('../../images/pieces/shogun/merida/blue/bF.svg');
+}
+.shogun piece.k-piece.black {
+    background-image: url('../../images/pieces/merida/bK.svg');
+}
+.shogun piece.pf-piece.black {
+    background-image: url('../../images/pieces/merida/bQ.svg');
+}
+.shogun piece.pn-piece.black {
+    background-image: url('../../images/pieces/shogun/merida/mono/bG.svg');
+}
+.shogun piece.pr-piece.black {
+    background-image: url('../../images/pieces/shogun/merida/mono/bM.svg');
+}
+.shogun piece.pb-piece.black {
+    background-image: url('../../images/pieces/merida/bAr.svg');
+}
+.shogun piece.pp-piece.black {
+    background-image: url('../../images/pieces/shogun/merida/mono/bC.svg');
+}
+
+.shogun piece.p-piece.white {
+    background-image: url('../../images/pieces/merida/wP.svg');
+}
+.shogun piece.b-piece.white {
+    background-image: url('../../images/pieces/merida/wB.svg');
+}
+.shogun piece.n-piece.white {
+    background-image: url('../../images/pieces/merida/wN.svg');
+}
+.shogun piece.r-piece.white {
+    background-image: url('../../images/pieces/merida/wR.svg');
+}
+.shogun piece.f-piece.white {
+    background-image: url('../../images/pieces/shogun/merida/blue/wF.svg');
+}
+.shogun piece.k-piece.white {
+    background-image: url('../../images/pieces/merida/wK.svg');
+}
+.shogun piece.pf-piece.white {
+    background-image: url('../../images/pieces/merida/wQ.svg');
+}
+.shogun piece.pn-piece.white {
+    background-image: url('../../images/pieces/shogun/merida/mono/wG.svg');
+}
+.shogun piece.pr-piece.white {
+    background-image: url('../../images/pieces/shogun/merida/mono/wM.svg');
+}
+.shogun piece.pb-piece.white {
+    background-image: url('../../images/pieces/merida/wAr.svg');
+}
+.shogun piece.pp-piece.white {
+    background-image: url('../../images/pieces/shogun/merida/mono/wC.svg');
+}

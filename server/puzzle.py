@@ -1,0 +1,314 @@
+from __future__ import annotations
+import random
+from datetime import datetime, timezone
+
+import aiohttp_session
+from pymongo.errors import DuplicateKeyError
+from aiohttp import web
+
+from fairy import FairyBoard
+from glicko2.glicko2 import MU, gl2, Rating, rating
+from pychess_global_app_state_utils import get_app_state
+from variants import VARIANTS
+
+
+# This was used only once to rename the document properties
+# but it is useful to let it here for documentation purpose
+FIELD_MAPPING = {
+    "fen": "f",    # the starting fen of the puzzle
+    "variant": "v", # the variant of the puzzle
+    "moves": "m", # the moves of the puzzle
+    "eval": "e", # the evaluation of the puzzle
+    "type": "t", # the type of the puzzle
+    "uploadedBy": "b", # the user who uploaded the puzzle
+    "site": "s", # the site where the puzzle is from
+    "review": "r", # the review of the puzzle
+    "played": "p", # the number of times the puzzle has been played
+    "up": "u", # the number of up votes for the puzzle
+    "down": "d", # the number of down votes for the puzzle
+    "cooked": "c", # whether the puzzle has been cooked (no actually it means if the puzzle is a game or not)
+    "gameId": "g", # the game id of the puzzle
+}
+
+# variants having 0 puzzle so far
+NO_PUZZLE_VARIANTS = (
+    "antichess",
+    "horde",
+    "placement",
+    "gorogoroplus",
+    "cannonshogi",
+    "bughouse",
+    "fogofwar",
+    "supply",
+    "makbug",
+)
+
+PUZZLE_VARIANTS = [v for v in VARIANTS if (not v.endswith("960") and (v not in NO_PUZZLE_VARIANTS))]
+
+NOT_VOTED = 0
+UP = 1
+DOWN = -1
+
+
+async def rename_puzzle_fields(db):
+    print("-----------------------------------------")
+    print("Starting puzzle field rename migration...")
+    for old_name, new_name in FIELD_MAPPING.items():
+        try:
+            result = await db.puzzle.update_many(
+                {old_name: {"$exists": True}},
+                {"$rename": {old_name: new_name}},
+            )
+            print(f"Renamed {old_name} -> {new_name} in {result.modified_count} documents.")
+        except Exception as e:
+            print(f"Failed renaming {old_name} -> {new_name}: {e}")
+    print("Migration completed.")
+    print("--------------------")
+
+
+def empty_puzzle(variant):
+    puzzle = {
+        "_id": "0",
+        "v": variant,
+        "f": FairyBoard.start_fen(variant),
+        "t": "",
+        "m": "",
+        "e": "",
+    }
+    return puzzle
+
+
+async def get_puzzle(request, puzzleId):
+    puzzle = await get_app_state(request.app).db.puzzle.find_one({"_id": puzzleId})
+    return puzzle
+
+
+async def get_daily_puzzle(request):
+    app_state = get_app_state(request.app)
+    if app_state.db is None:
+        return empty_puzzle("chess")
+
+    db_collections = await app_state.db.list_collection_names()
+    if "puzzle" not in db_collections:
+        return empty_puzzle("chess")
+
+    today = datetime.now(timezone.utc).date().isoformat()
+    daily_puzzle_ids = app_state.daily_puzzle_ids
+
+    if today in daily_puzzle_ids:
+        puzzle = await get_puzzle(request, daily_puzzle_ids[today])
+    else:
+        user = app_state.users["PyChess"]
+
+        # skip previous daily puzzles
+        user.puzzles = {puzzle_id: NOT_VOTED for puzzle_id in daily_puzzle_ids.values()}
+        # print(user.puzzles)
+
+        puzzleId = "0"
+        while puzzleId == "0":
+            # randomize daily puzzle variant
+            user.puzzle_variant = random.choice(PUZZLE_VARIANTS)
+            puzzle = await next_puzzle(request, user)
+            if puzzle.get("e") != "#1":
+                puzzleId = puzzle["_id"]
+
+        try:
+            await app_state.db.dailypuzzle.insert_one({"_id": today, "puzzleId": puzzleId})
+            app_state.daily_puzzle_ids[today] = puzzle["_id"]
+        except DuplicateKeyError:
+            # I have no idea how this can happen though...
+            daily_puzzle_doc = await app_state.db.dailypuzzle.find_one({"_id": today})
+            puzzleId = daily_puzzle_doc["puzzleId"]
+            try:
+                await app_state.db.dailypuzzle.insert_one({"_id": today, "puzzleId": puzzleId})
+                app_state.daily_puzzle_ids[today] = puzzleId
+                puzzle = await get_puzzle(request, puzzleId)
+            except Exception:
+                return empty_puzzle("chess")
+    return puzzle
+
+
+async def next_puzzle(request, user):
+    app_state = get_app_state(request.app)
+    skipped = list(user.puzzles.keys())
+    filters = [
+        {"_id": {"$nin": skipped}},
+        {"c": {"$ne": True}},
+        {"r": {"$ne": False}},
+    ]
+    if user.puzzle_variant is not None:
+        variant = user.puzzle_variant
+        filters.append({"v": variant})
+    else:
+        variant = "chess"
+
+    puzzle = None
+
+    if app_state.db is not None:
+        pipeline = [
+            {"$match": {"$and": filters}},
+            {"$sample": {"size": 1}},
+        ]
+        cursor = await app_state.db.puzzle.aggregate(pipeline)
+
+        async for doc in cursor:
+            puzzle = {
+                "_id": doc["_id"],
+                "v": doc["v"],
+                "f": doc["f"],
+                "m": doc["m"],
+                "t": doc["t"],
+                "e": doc["e"],
+                "s": doc.get("s", ""),
+                "g": doc.get("g", ""),
+                "p": doc.get("p", 0),
+                "lm": doc.get("lm", ""),
+            }
+            break
+
+    if puzzle is None:
+        puzzle = empty_puzzle(variant)
+
+    return puzzle
+
+
+async def puzzle_complete(request):
+    app_state = get_app_state(request.app)
+    puzzleId = request.match_info.get("puzzleId")
+    post_data = await request.post()
+    rated = post_data["rated"] == "true"
+
+    puzzle_data = await get_puzzle(request, puzzleId)
+    puzzle = Puzzle(app_state.db, puzzle_data)
+
+    await puzzle.set_played()
+
+    # Who made the request?
+    session = await aiohttp_session.get_session(request)
+    session_user = session.get("user_name")
+    if session_user is None:
+        return web.json_response({})
+
+    user = await app_state.users.get(session_user)
+
+    if puzzleId in user.puzzles:
+        return web.json_response({})
+    else:
+        user.puzzles[puzzleId] = NOT_VOTED
+
+    if user.anon or (not rated):
+        return web.json_response({})
+
+    variant = post_data["v"]
+    chess960 = False  # TODO: add chess960 to xxx960 variant puzzles
+    color = post_data["color"]
+    win = post_data["win"] == "true"
+
+    if color[0] == "w":
+        wplayer, bplayer = user, puzzle
+        white_rating = user.get_puzzle_rating(variant, chess960)
+        black_rating = puzzle.get_rating(variant, chess960)
+        result = "1-0" if win else "0-1"
+    else:
+        wplayer, bplayer = puzzle, user
+        white_rating = puzzle.get_rating(variant, chess960)
+        black_rating = user.get_puzzle_rating(variant, chess960)
+        result = "0-1" if win else "1-0"
+
+    ratings = await update_puzzle_ratings(
+        wplayer, bplayer, white_rating, black_rating, variant, chess960, result
+    )
+    return web.json_response(ratings)
+
+
+async def puzzle_vote(request):
+    app_state = get_app_state(request.app)
+    puzzleId = request.match_info.get("puzzleId")
+    post_data = await request.post()
+    good = post_data["vote"] == "true"
+    up_or_down = "u" if good else "d"
+
+    # Who made the request?
+    session = await aiohttp_session.get_session(request)
+    session_user = session.get("user_name")
+    if session_user is None:
+        return web.json_response({})
+
+    user = await app_state.users.get(session_user)
+
+    if user.puzzles.get(puzzleId):
+        return web.json_response({})
+    else:
+        user.puzzles[puzzleId] = UP if good else DOWN
+
+    db = app_state.db
+    if db is not None:
+        await db.puzzle.find_one_and_update({"_id": puzzleId}, {"$inc": {up_or_down: 1}})
+
+    return web.json_response({})
+
+
+async def update_puzzle_ratings(
+    wplayer, bplayer, white_rating, black_rating, variant, chess960, result
+):
+    if result == "1-0":
+        (white_score, black_score) = (1.0, 0.0)
+    elif result == "0-1":
+        (white_score, black_score) = (0.0, 1.0)
+    else:
+        raise RuntimeError("game.result: unexpected result code")
+
+    wr = gl2.rate(white_rating, [(white_score, black_rating)])
+    br = gl2.rate(black_rating, [(black_score, white_rating)])
+
+    await wplayer.set_puzzle_rating(variant, chess960, wr)
+    await bplayer.set_puzzle_rating(variant, chess960, br)
+
+    wrdiff = int(round(wr.mu - white_rating.mu, 0))
+    brdiff = int(round(br.mu - black_rating.mu, 0))
+    return (wrdiff, brdiff)
+
+
+def default_puzzle_perf(puzzle_eval):
+    perf = {
+        "gl": {"r": rating.mu, "d": rating.phi, "v": rating.sigma},
+        "la": datetime.now(timezone.utc),
+        "nb": 0,
+    }
+    if len(puzzle_eval) > 1 and puzzle_eval[0] == "#":
+        perf["gl"]["r"] = MU + 200 * (int(puzzle_eval[1:]) - 2)
+    return perf
+
+
+class Puzzle:
+    def __init__(self, db, puzzle_data):
+        self.db = db
+        self.puzzle_data = puzzle_data
+        self.puzzleId = puzzle_data["_id"]
+        self.perf = puzzle_data.get("perf", default_puzzle_perf(puzzle_data["e"]))
+
+    def get_rating(self, variant: str, chess960: bool) -> Rating:
+        gl = self.perf["gl"]
+        la = self.perf["la"]
+        return gl2.create_rating(gl["r"], gl["d"], gl["v"], la)
+
+    async def set_puzzle_rating(self, _variant: str, _chess960: bool, rating: Rating):
+        gl = {"r": rating.mu, "d": rating.phi, "v": rating.sigma}
+        la = datetime.now(timezone.utc)
+        nb = self.perf.get("nb", 0)
+        self.perf = {
+            "gl": gl,
+            "la": la,
+            "nb": nb + 1,
+        }
+
+        if self.db is not None:
+            await self.db.puzzle.find_one_and_update(
+                {"_id": self.puzzleId}, {"$set": {"perf": self.perf}}
+            )
+
+    async def set_played(self):
+        if self.db is not None:
+            await self.db.puzzle.find_one_and_update(
+                {"_id": self.puzzleId}, {"$set": {"p": self.puzzle_data.get("p", 0) + 1}}
+            )

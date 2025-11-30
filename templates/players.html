@@ -1,0 +1,66 @@
+{% extends "template.html" %}
+{% block content %}
+<div id="main-wrap">
+<main class="page-menu players">
+<aside class="flat-bg">
+    {% if admin %}
+    <a class="allplayers-button" href="{{ home }}/allplayers">{% trans %}All players{% endtrans %}</a><br>
+    {% endif %}
+    <a class="allplayers-button" href="{{ home }}/tournaments/winners">{% trans %}Tournament winners{% endtrans %}</a><br>
+    <a class="allplayers-button" href="{{ home }}/tournaments/shields">{% trans %}Tournament shields{% endtrans %}</a>
+    <table id="players">
+        <thead>
+            <tr>
+                <th>{% trans %}Online{% endtrans %}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user in online_users %}
+            <tr>
+                <td class="player-data">
+                <i-side class="online icon icon-online"></i-side>
+                <player>
+                    <a class="user-link" href="{{ home }}/@/{{ user.username }}"><player-title>{{ user.title }}</player-title> {{ user.username }}</a>
+                </player>
+                </td>
+            </tr>
+            {% endfor %}
+            {% if anon_online > 0 %}
+            <tr>
+                <td class="player-data">
+                <i-side class="online icon icon-online"></i-side>
+                <player>
+                    <span>{% trans %}Anonymous{% endtrans %}({{ anon_online }})</span>
+                </player>
+                </td>
+            </tr>
+            {% endif %}
+        </tbody>
+    </table>
+</aside>
+<aside class="flat-bg">
+    <div class="highscore">
+        {% for key in highscore %}
+        <div class="card">
+            <div class="info0 icon" data-icon="{{ icons[key] }}">
+                <a href="{{ home }}/players/{{ key }}"><div class="variant">{{ variant_display_name(key) }}</div></a>
+            </div>
+            {% for user, score in highscore[key].items() %}
+                <div class="player-data">
+                    <player>
+                        <a class="user-link" href="{{ home }}/@/{{ user.split("|")[0] }}"><player-title>{{ user.split("|")[1] }}</player-title> {{ user.split("|")[0] }}</a>
+                        <rating>{{ score }}</rating>
+                    </player>
+                </div>
+            {% endfor %}
+        </div>
+        {% endfor %}
+    </div>
+</aside>
+</main>
+</div>
+{% endblock %}
+{% block js %}
+    <script src="{{ js }}"></script>
+{% endblock %}
+

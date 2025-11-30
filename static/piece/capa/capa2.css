@@ -1,0 +1,49 @@
+.capa piece.a-piece.white {
+    background-image: url('../../images/pieces/green/wA.svg');
+}
+.capa piece.c-piece.white {
+    background-image: url('../../images/pieces/green/wC.svg');
+}
+.capa piece.a-piece.black {
+    background-image: url('../../images/pieces/green/bA.svg');
+}
+.capa piece.c-piece.black {
+    background-image: url('../../images/pieces/green/bC.svg');
+}
+
+.capa piece.p-piece.white {
+    background-image: url('../../images/pieces/green/wP.svg');
+}
+.capa piece.b-piece.white {
+    background-image: url('../../images/pieces/green/wB.svg');
+}
+.capa piece.n-piece.white {
+    background-image: url('../../images/pieces/green/wN.svg');
+}
+.capa piece.r-piece.white {
+    background-image: url('../../images/pieces/green/wR.svg');
+}
+.capa piece.q-piece.white {
+    background-image: url('../../images/pieces/green/wQ.svg');
+}
+.capa piece.k-piece.white {
+    background-image: url('../../images/pieces/green/wK.svg');
+}
+.capa piece.p-piece.black {
+    background-image: url('../../images/pieces/green/bP.svg');
+}
+.capa piece.b-piece.black {
+    background-image: url('../../images/pieces/green/bB.svg');
+}
+.capa piece.n-piece.black {
+    background-image: url('../../images/pieces/green/bN.svg');
+}
+.capa piece.r-piece.black {
+    background-image: url('../../images/pieces/green/bR.svg');
+}
+.capa piece.q-piece.black {
+    background-image: url('../../images/pieces/green/bQ.svg');
+}
+.capa piece.k-piece.black {
+    background-image: url('../../images/pieces/green/bK.svg');
+}

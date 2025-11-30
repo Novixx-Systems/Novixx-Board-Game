@@ -1,0 +1,477 @@
+#main-wrap {
+    --main-max-width: auto;
+}
+.tour {
+    grid-area: main;
+    display: grid;
+    grid-gap: 2vmin;
+}
+@media (max-width: 799px) and (orientation: portrait) {
+    #main-wrap {
+        --main-max-width: 100%;
+    }
+    .tour {
+        grid-template-areas: 'main' 'side' 'uchat' 'table';
+    }
+}
+@media (min-width: 800px) {
+    .tour {
+        grid-template-columns: minmax(250px, 350px) minmax(500px, calc(100vh * 0.9 - calc(var(--site-header-height) + var(--site-header-margin)) - 3rem)) minmax(240px, 400px);
+        grid-template-rows: calc(100vh - calc(var(--site-header-height) + var(--site-header-margin)) - 2vmin - 3rem) auto;
+        grid-template-areas: 'side main table' 'uchat players table';
+    }
+}
+under-chat {
+    grid-area: uchat;
+}
+div.info0 {
+    margin-bottom: 3vmin;
+}
+.user-link {
+    padding: 0;
+}
+.description {
+    max-height: 20vh;
+    overflow-y: auto;
+    overflow-wrap: break-word;
+    word-break: break-word;
+    margin-bottom: 2vmin;
+}
+.description a {
+    color: var(--blue-hover);
+}
+.defender {
+    margin-bottom: 2vmin;
+}
+table#players {
+    grid-area: main;
+    margin-bottom: 3vmin;
+}
+div.tour-header {
+    display: flex;
+    flex-flow: row nowrap;
+    align-items: center;
+    min-height: 7em;
+    padding: 0 3vmin;
+}
+div.tour-header h1 {
+    color: var(--gold);
+    flex: 9 1 auto;
+    margin: 0;
+    overflow: hidden;
+    text-align: center;
+}
+table#players, table#games {
+    width: 100%;
+    border: none;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+div.pager {
+    display: flex;
+    align-items: center;
+    flex-flow: row wrap;
+}
+span.page {
+    align-self: center;
+    padding: 3px;
+}
+.btn-controls {
+    display: flex;
+    position: relative;
+    background-color: var(--bg-color2);
+    box-shadow: var(--base-shadow);
+    height: 40px;
+}
+.btn-controls i {
+    font-size: 1.2em;
+    opacity: 0.9;
+}
+.btn-controls button {
+    flex: 1;
+    border: none;
+    padding: 0.6em 1em;
+    font-size:0.8em;
+    background-color: var(--bg-color);
+    line-height: 1.3;
+}
+button#action {
+    height: auto;
+    margin: 0;
+    position: absolute;
+    right: 5px;
+    top: -3px;
+    padding: 8px 20px;
+    border-radius: 8px;
+    border-bottom: 5px solid #759900;
+    color: white;
+    background-color: #82bf56;
+    font-size:1.2em;
+    text-shadow: 0 -1px #759900;
+    transform: translate(0px, 0px);
+    transition: 0.2s all;
+}
+button#action::before {
+    margin-right: 0.4em;
+}
+button#action:hover {
+    filter: brightness(1.06);
+    background-color: var(--green-hover);
+}
+button#action:active {
+    transform:translate(0px, 5px);
+    border-bottom-width:1px;
+    text-shadow:0 0 #759900;
+    filter:brightness(1);
+}
+
+.players {
+    grid-area: main;
+}
+.tour-table {
+    grid-area: table;
+    align-self: flex-start;
+}
+table.players tr {
+    cursor: pointer;
+}
+table.players tr:nth-child(2n) {
+    background: var(--bg-color2);
+}
+table.pairings tr:nth-child(2n+1) {
+    background: var(--bg-color2);
+}
+table.players tr:hover, table.pairings tr:hover {
+    background-color: var(--game-hover);
+}
+table td {
+    padding: 1rem;
+    font-size: 14px;
+}
+td.rank {
+    padding: 1em 0.5em 1em 10px;
+}
+td.player {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+span.title {
+    padding-right: 5px;
+    color: var(--gold);
+}
+span.name {
+    padding-right: 5px;
+    white-space: nowrap;
+}
+td.sheet {
+    text-align: right;
+    padding-right: 0px;
+    padding-left: 0px;
+    width: 100%;
+}
+td.sheet > * {
+    display: inline-block;
+}
+td.sheet div {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: flex-end;
+    gap: 0.1em;
+}
+div.janggi td.sheet div {
+    gap: 0.3em;
+}
+td.sheet score {
+    opacity: 0.7;
+}
+td.sheet streak {
+    color: var(--green-hover);
+}
+td.sheet double {
+    color: var(--gold);
+}
+fire {
+    color: var(--gold);
+}
+td.total {
+    text-align: right;
+    padding-left: 0px;
+    padding: 1rem;
+}
+strong.score {
+    padding-right: 8px;
+}
+.tour-table {
+    display: flex;
+    flex-flow: column;
+}
+#player table th {
+    text-align: left;
+    font-size: 14px;
+    font-weight: normal;
+}
+#player table td {
+    padding: 0.3em;
+    font-size: 14px;
+}
+table.pairings tr {
+    cursor: pointer;
+}
+table.pairings th {
+    padding: 0.3em;
+    border: 0;
+    border-left: 3px solid var(--bg-color0);
+}
+table.stats td {
+    padding: 0;
+    padding-left: 10px;
+    text-align: right;
+}
+div#player {
+    position: relative;
+    width: 100%;
+}
+div#stats {
+    display: flex;
+    flex-flow: column;
+}
+.close {
+    position: absolute;
+    top: 4px;
+    right: 5px;
+    opacity: 0.6;
+    transition: all 150ms;
+    color: var(--bad);
+    background: none;
+    border-radius: 0;
+}
+.close:hover, .close:focus {
+    cursor: pointer;
+    opacity: 0.9;
+    color: var(--bad);
+    background: none;
+}
+#stats table {
+    margin: 1em auto;
+}
+#stats h2 {
+    background: linear-gradient(to bottom, var(--bg-meta) 0%, var(--bg-color2) 100%);
+    font-size: 1.4em;
+    font-family: 'Roboto', Sans-Serif;
+    padding: 0.6rem 1rem;
+    margin: 0;
+    border-bottom: 1px solid var(--border-color);
+}
+#stats tr {
+    vertical-align: middle;
+}
+td i-side {
+    opacity: 0.6;
+}
+td.result {
+    font-weight: bold;
+}
+.point {
+    flex: 0 0 2em;
+}
+.lose {
+    color: var(--bad);
+}
+.win {
+    color: var(--good);
+}
+
+.shy {
+    font-size: 0.9em;
+    font-weight: bold;
+    opacity: 0.6;
+    text-align: right;
+}
+#clockdiv {
+    display: flex;
+    flex-flow: column;
+}
+#clock {
+    font-family: 'Roboto', Sans-Serif;
+    color: var(--font-color);
+    display: inline-block;
+    font-weight: bold;
+    text-align: center;
+    font-size: 1.5em;
+}
+rank {
+    font-weight: bold;
+    padding-right: 1ch;
+}
+div.player {
+    display: flex;
+    flex-flow: row;
+    justify-content: space-between;
+}
+.podium {
+    padding-bottom: 20px;
+}
+.podium > div {
+    display: inline-block;
+    text-align: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: bold;
+}
+.podium .second {
+    font-size: 1.3em;
+    width: 29%;
+}
+.podium .first {
+    width: 44%;
+    font-size: 1.6em;
+}
+.podium .third {
+    font-size: 1.2em;
+    width: 27%;
+}
+.podium .trophy {
+    margin: 0 auto 0.5em auto;
+    background: center / contain no-repeat;
+}
+.podium .second .trophy {
+    height: 9em;
+    width: 7em;
+    background-image: url("images/trophy/silver.svg");
+}
+.podium .first .trophy {
+    height: 9em;
+    width: 9em;
+    background-image: url("images/trophy/gold.svg");
+}
+.podium .third .trophy {
+    height: 7em;
+    width: 7em;
+    background-image: url("images/trophy/bronze.svg");
+}
+.podium .stats {
+    margin: 0.5em auto 0 auto;
+    font-size: 0.7em;
+}
+.podium .stats th {
+    font-weight: normal;
+    letter-spacing: -1px;
+    text-align: left;
+}
+.podium .stats td {
+    font-weight: bold;
+    padding-left: 5px;
+    text-align: right;
+}
+
+.tour-table table {
+    margin: auto;
+}
+#summary.box  {
+    padding: 1.7em 0;
+    width:100%;
+}
+#summary h2 {
+    font-size: 1.5em;
+    margin-bottom: 1em;
+    text-align: center;
+}
+#summary table tr {
+    line-height: 2em;
+}
+#summary table td {
+    font-weight: bold;
+    padding: 0 0 0 1em;
+    text-align: right;
+}
+.tour-stats-links {
+    margin: 2em auto 0 auto;
+}
+.tour-stats-links a {
+    display: block;
+    margin: 0.5em 0;
+    color: var(--link-color-blue);
+}
+[class*=" icon-"]:before {
+    margin: 0 0.3em;
+}
+td.bye {
+    text-align: center;
+}
+.shield-trophy {
+    display: block;
+    width: 67px;
+    height: 80px;
+    background: url(images/trophy/shield-gold.png) no-repeat;
+    background-size: contain;
+    font-family: 'pychess';
+    font-size: 40px;
+    line-height: 70px;
+    text-align: center;
+    color: #333 !important;
+    text-shadow: 0 0 6px #fff;
+}
+div.cg-wrap.mini {
+    width: auto!important;
+}
+div.with-pockets div.cg-wrap.mini {
+    position: relative;
+    top: calc(var(--cg-height) / var(--ranks));
+}
+#top-game {
+    display: flex;
+    align-self: center;
+    flex-flow: column;
+    width: calc(min(100%, 100% * (var(--files) / (var(--ranks) + var(--pocketLength) / var(--files)))));
+}
+#mainboard.with-pockets {
+    padding-bottom: calc(var(--cg-height) / var(--ranks) * 2);
+}
+
+.duels {
+    margin: var(--block-gap) 0 0 0;
+}
+.duels a {
+    display: flex;
+    flex-flow: column;
+    color: var(--font-color);
+    padding: .5em .7em;
+    white-space: nowrap;
+    line-height: 1.9em;
+    border-top: 1px solid var(--chat-entry-border-top);
+    transition: all 150ms;
+}
+.duels a:hover {
+    background-color: var(--game-hover);
+}
+line {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: center;
+  justify-content: space-between;
+}
+line.a .rank {
+  margin-left: .3em;
+  padding: .1em .5em;
+  background: var(--bg-color2);
+}
+line.b .rank {
+  margin-right: .3em;
+  padding: .1em .5em;
+  background: var(--bg-color2);
+}
+.duels h2 {
+  font-size: 1.5em;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+}
+div.tour-faq {
+  padding: 4em;
+}
+.tour-faq h2 {
+  margin: 1.5em 0 .5em 0;
+  font-size: 30px;
+}
+.tour-faq p {
+  padding: 0;
+}

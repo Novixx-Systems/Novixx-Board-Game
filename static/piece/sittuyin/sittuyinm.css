@@ -1,0 +1,36 @@
+.sittuyin piece.p-piece.white {
+    background-image: url('../../images/pieces/makruk/ada/rP.svg');
+}
+.sittuyin piece.s-piece.white {
+    background-image: url('../../images/pieces/makruk/ada/rB.svg');
+}
+.sittuyin piece.n-piece.white {
+    background-image: url('../../images/pieces/makruk/ada/rN.svg');
+}
+.sittuyin piece.r-piece.white {
+    background-image: url('../../images/pieces/makruk/ada/rR.svg');
+}
+.sittuyin piece.f-piece.white {
+    background-image: url('../../images/pieces/makruk/ada/rQ.svg');
+}
+.sittuyin piece.k-piece.white {
+    background-image: url('../../images/pieces/makruk/ada/rK.svg');
+}
+.sittuyin piece.p-piece.black {
+    background-image: url('../../images/pieces/makruk/ada/bP.svg');
+}
+.sittuyin piece.s-piece.black {
+    background-image: url('../../images/pieces/makruk/ada/bB.svg');
+}
+.sittuyin piece.n-piece.black {
+    background-image: url('../../images/pieces/makruk/ada/bN.svg');
+}
+.sittuyin piece.r-piece.black {
+    background-image: url('../../images/pieces/makruk/ada/bR.svg');
+}
+.sittuyin piece.f-piece.black {
+    background-image: url('../../images/pieces/makruk/ada/bQ.svg');
+}
+.sittuyin piece.k-piece.black {
+    background-image: url('../../images/pieces/makruk/ada/bK.svg');
+}

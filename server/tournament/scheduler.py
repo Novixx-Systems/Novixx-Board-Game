@@ -1,0 +1,241 @@
+from __future__ import annotations
+import calendar as cal
+from collections import namedtuple
+import datetime as dt
+import zoneinfo
+
+from const import (
+    ARENA,
+    CATEGORIES,
+    SCHEDULE_MAX_DAYS,
+    TYPE_CHECKING,
+    HOURLY,
+    DAILY,
+    WEEKLY,
+    MONTHLY,
+    YEARLY,
+    SHIELD,
+)
+
+if TYPE_CHECKING:
+    from pychess_global_app_state import PychessGlobalAppState
+
+from tournament.tournaments import new_tournament
+from logger import log
+from variants import get_server_variant, GRANDS
+
+Plan = namedtuple("Plan", "freq, date, hour, variant, is960, base, inc, byo, duration")
+
+SHIELDS = [
+    "chess",
+]
+SEATURDAY = ["chess"]
+
+MONTHLY_VARIANTS = (
+    "chess",
+)
+
+NEW_MONTHLY_VARIANTS = (
+    "chess",
+)
+
+# Old MONTHLY tournaments, needed to create translated tourney names
+PAUSED_MONTHLY_VARIANTS = ()
+
+# Old WEEKLY tournaments, paused atm., but needed to create translated tourney names
+WEEKLY_VARIANTS = (
+    "chess",
+)
+
+HOURLY_VARIANTS = (
+    "chess"
+)
+
+# Monthly Variant Tournaments need different TC
+TC_MONTHLY_VARIANTS: dict[str, tuple[int, int, int]] = {v: (3, 2, 0) for v in MONTHLY_VARIANTS}
+
+
+
+def go_month(orig_date, month=1):
+    new_year = orig_date.year
+    new_month = orig_date.month + month
+
+    if new_month > 12:
+        new_year += 1
+        new_month -= 12
+
+    last_day_of_month = cal.monthrange(new_year, new_month)[1]
+    new_day = min(orig_date.day, last_day_of_month)
+
+    return orig_date.replace(year=new_year, month=new_month, day=new_day)
+
+
+class Scheduler:
+    def __init__(self, now=None):
+        if now is None:
+            self.now = dt.datetime.now(dt.timezone.utc)
+        else:
+            self.now = now
+        # set time info to 0:0:0
+        self.now = dt.datetime.combine(self.now, dt.time.min, tzinfo=dt.timezone.utc)
+
+    def next_weekday(self, date, weekday):
+        days_ahead = weekday - date.weekday()
+        if days_ahead < 0:  # Target day already happened this week
+            days_ahead += 7
+        return date + dt.timedelta(days=days_ahead)
+
+    def first_monthly(self, weekday):
+        return self.next_weekday(
+            dt.datetime(self.now.year, self.now.month, 1, tzinfo=dt.timezone.utc),
+            weekday,
+        )
+
+    def second_monthly(self, weekday):
+        return self.first_monthly(weekday) + dt.timedelta(days=7)
+
+    def third_monthly(self, weekday):
+        return self.first_monthly(weekday) + dt.timedelta(days=14)
+
+    def fourth_monthly(self, weekday):
+        return self.first_monthly(weekday) + dt.timedelta(days=21)
+
+    def next_day_of_week(self, weekday):
+        return self.now + dt.timedelta(days=(weekday + 7 - self.now.weekday()) % 7)
+
+    def get_next_variant(self, period, variants):
+        return variants[period % len(variants)]
+
+    def schedule_plan(self):
+        """Create planned tournament plan list for one full month"""
+        SEA = self.get_next_variant(self.now.month, ("sittuyin", "cambodian"))
+        plans = []
+        number_of_days = cal.monthrange(self.now.year, self.now.month)[1]
+
+        for i, v in enumerate(NEW_MONTHLY_VARIANTS):
+            if i + 1 > number_of_days:
+                break
+            is_960 = v.endswith("960")
+            base, inc, byo = TC_MONTHLY_VARIANTS[v]
+            hour = 14
+            try:
+                date = dt.datetime(self.now.year, self.now.month, i + 1, tzinfo=dt.timezone.utc)
+                if date.weekday() == cal.SUNDAY:
+                    # Shields on each SUNDAY starts at 12 and 3 hours long, so put this early...
+                    hour = 10
+            except ValueError:
+                log.error("schedule_plan() ValueError")
+                break
+            plans.append(Plan(MONTHLY, date, hour, v.rstrip("960"), is_960, base, inc, byo, 90))
+
+        for i, v in enumerate(MONTHLY_VARIANTS):
+            if i + 1 > number_of_days:
+                break
+            is_960 = v.endswith("960")
+            base, inc, byo = TC_MONTHLY_VARIANTS[v]
+            hour = 16
+            try:
+                date = dt.datetime(self.now.year, self.now.month, i + 1, tzinfo=dt.timezone.utc)
+            except ValueError:
+                log.error("schedule_plan() ValueError")
+                break
+            plans.append(Plan(MONTHLY, date, hour, v.rstrip("960"), is_960, base, inc, byo, 90))
+
+        plans += [
+            Plan(DAILY, dt.datetime(self.now.year, self.now.month, 1, tzinfo=dt.timezone.utc), 14, "chess", False, 5, 2, 0, 90),
+        ]
+
+        for hour in range(0, 24):
+            plans += [
+                Plan(HOURLY, dt.datetime(self.now.year, self.now.month, self.now.day, hour, tzinfo=dt.timezone.utc), hour, "chess", False, 5, 2, 0, 60),
+            ]
+
+        return plans
+
+
+def new_scheduled_tournaments(already_scheduled, now=None):
+    """Create list for scheduled tournament data for one week from now on compared to what we already have"""
+
+    # Cut off the latest element (_id) from all tournament data first
+    # to let test if new plan data is already in already_scheduled or not.
+    already_scheduled = [t[:5] for t in already_scheduled]
+
+    if now is None:
+        now = dt.datetime.now(dt.timezone.utc)
+        # set time info to 0:0:0
+        now = dt.datetime.combine(now, dt.time.min, tzinfo=dt.timezone.utc)
+
+    to_date = dt.datetime.combine(now, dt.time.max, tzinfo=dt.timezone.utc) + dt.timedelta(
+        days=SCHEDULE_MAX_DAYS
+    )
+
+    # 2 full month list of scheduled tournaments
+    plans = Scheduler(now).schedule_plan() + Scheduler(go_month(now)).schedule_plan()
+
+    new_tournaments_data = []
+
+    budapest = zoneinfo.ZoneInfo("Europe/Budapest")
+    from_now = dt.datetime(2024, 10, 28, tzinfo=dt.timezone.utc)
+
+    for plan in plans:
+        starts_at = dt.datetime(
+            plan.date.year,
+            plan.date.month,
+            plan.date.day,
+            hour=plan.hour,
+            tzinfo=dt.timezone.utc,
+        )
+
+        # When it starts outside of daylight saving time (DST), shift it one hour later
+        if plan.date >= from_now and budapest.dst(starts_at.astimezone(budapest)).seconds == 0:
+            starts_at = starts_at + dt.timedelta(hours=1)
+
+        if (
+            starts_at >= now
+            and starts_at <= to_date
+            and (plan.freq, plan.variant, plan.is960, starts_at, plan.duration)
+            not in already_scheduled
+        ):
+            server_variant = get_server_variant(plan.variant, plan.is960)
+            variant_name = server_variant.display_name.title()
+
+            if plan.freq == SHIELD:
+                name = "%s Shield Arena" % variant_name
+            elif plan.freq == YEARLY:
+                name = "Yearly %s Arena" % variant_name
+            elif plan.freq == MONTHLY:
+                if plan.variant in CATEGORIES["makruk"]:
+                    name = "SEAturday %s Arena" % variant_name
+                else:
+                    name = "Monthly %s Arena" % variant_name
+            elif plan.freq == WEEKLY:
+                name = "Weekly %s Arena" % variant_name
+            elif plan.freq == DAILY:
+                name = "Daily %s Arena" % variant_name
+            elif plan.freq == HOURLY:
+                name = "Hourly %s Arena" % variant_name
+            else:
+                name = "%s Arena" % variant_name
+
+            new_tournaments_data.append(
+                {
+                    "name": name,
+                    "createdBy": "imusing",
+                    "frequency": plan.freq,
+                    "variant": plan.variant,
+                    "chess960": plan.is960,
+                    "base": plan.base,
+                    "inc": plan.inc,
+                    "bp": plan.byo,
+                    "system": ARENA,
+                    "startDate": starts_at,
+                    "minutes": plan.duration,
+                }
+            )
+
+    return new_tournaments_data
+
+
+async def create_scheduled_tournaments(app_state: PychessGlobalAppState, new_tournaments_data):
+    for data in new_tournaments_data:
+        await new_tournament(app_state, data)

@@ -1,0 +1,22 @@
+{% extends "template.html" %}
+{% block content %}
+<div class="profile-wrapper">
+<aside class="sidebar-first"></aside>
+<div class="main-feature-board">
+<table style="width: 100%;"><thead><tr><th style="width: 70%;"><h1>Website</h1></th><th style="width: 30%;"><h3>All registered accounts</h3></th></tr></thead>
+<tbody>
+     <tr><td><div style="font-weight: bold;">Zero ads</div></td><td><b class="icon icon-check"><span class="green-text-right">Yes</span></b></td></tr>
+     <tr><td><div style="font-weight: bold;">No tracking</div></td><td><b class="icon icon-check"><span class="green-text-right">Yes</span></b></td></tr>
+     <tr><td><a href="https://nbg.novixx.com/editor/chess">Board editor</a></td><td><b class="icon icon-check"><span class="green-text-right">Yes</span></b></td></tr>
+     <tr><td>Deep Fairy-Stockfish 14+ NNUE server analysis</td><td><b class="icon icon-check"><span class="green-text-right">Unlimited</span></b></td></tr>
+     <tr><td>Instant local Fairy-Stockfish 14+ analysis (depth 99)</td><td><b class="icon icon-check"><span class="green-text-right">Unlimited</span></b></td></tr>
+     <tr><td><a href="https://nbg.novixx.com/puzzle/chess">Tactical puzzles</a></td><td><b class="icon icon-check"><span class="green-text-right">Unlimited</span></b></td></tr>
+     <tr><td><a href="https://nbg.novixx.com/tv">Video library</a></td><td><b class="icon icon-check"><span class="green-text-right">Unlimited</span></b></td></tr>
+    </tbody></table>
+        <p class="explanation"><strong>Yes, all features on Chess are for free, for everybody and forever!</strong></p>
+</div>
+<aside class="sidebar-second"></aside>
+{% endblock %}
+{% block js %}
+    <script src="{{ js }}"></script>
+{% endblock %}

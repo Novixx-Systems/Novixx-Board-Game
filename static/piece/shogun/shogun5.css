@@ -1,0 +1,68 @@
+
+.shogun piece.p-piece.black {
+    background-image: url('../../images/pieces/green/bP.svg');
+}
+.shogun piece.b-piece.black {
+    background-image: url('../../images/pieces/green/bB.svg');
+}
+.shogun piece.n-piece.black {
+    background-image: url('../../images/pieces/green/bN.svg');
+}
+.shogun piece.r-piece.black {
+    background-image: url('../../images/pieces/green/bR.svg');
+}
+.shogun piece.f-piece.black {
+    background-image: url('../../images/pieces/shogun/cburnett/blue/bF.svg');
+}
+.shogun piece.k-piece.black {
+    background-image: url('../../images/pieces/green/bK.svg');
+}
+.shogun piece.pf-piece.black {
+    background-image: url('../../images/pieces/green/bQ.svg');
+}
+.shogun piece.pn-piece.black {
+    background-image: url('../../images/pieces/shogun/cburnett/mono/bG.svg');
+}
+.shogun piece.pr-piece.black {
+    background-image: url('../../images/pieces/shogun/cburnett/mono/bM.svg');
+}
+.shogun piece.pb-piece.black {
+    background-image: url('../../images/pieces/shogun/cburnett/mono/bA.svg');
+}
+.shogun piece.pp-piece.black {
+    background-image: url('../../images/pieces/shogun/cburnett/mono/bC.svg');
+}
+
+.shogun piece.p-piece.white {
+    background-image: url('../../images/pieces/green/wP.svg');
+}
+.shogun piece.b-piece.white {
+    background-image: url('../../images/pieces/green/wB.svg');
+}
+.shogun piece.n-piece.white {
+    background-image: url('../../images/pieces/green/wN.svg');
+}
+.shogun piece.r-piece.white {
+    background-image: url('../../images/pieces/green/wR.svg');
+}
+.shogun piece.f-piece.white {
+    background-image: url('../../images/pieces/shogun/cburnett/blue/wF.svg');
+}
+.shogun piece.k-piece.white {
+    background-image: url('../../images/pieces/green/wK.svg');
+}
+.shogun piece.pf-piece.white {
+    background-image: url('../../images/pieces/green/wQ.svg');
+}
+.shogun piece.pn-piece.white {
+    background-image: url('../../images/pieces/shogun/cburnett/mono/wG.svg');
+}
+.shogun piece.pr-piece.white {
+    background-image: url('../../images/pieces/shogun/cburnett/mono/wM.svg');
+}
+.shogun piece.pb-piece.white {
+    background-image: url('../../images/pieces/shogun/cburnett/mono/wA.svg');
+}
+.shogun piece.pp-piece.white {
+    background-image: url('../../images/pieces/shogun/cburnett/mono/wC.svg');
+}
