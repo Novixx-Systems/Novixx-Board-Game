@@ -2,6 +2,8 @@
 
 Novixx Board Game (Chess) is a chess variant like Drawback Chess, but open source. Add your own drawbacks in drawbacks.py and then modify the random.choice in game.py (will make it automatic later)
 
+# ORIGINAL PYCHESS README: START
+
 ## [www.pychess.org](https://www.pychess.org)
 
 [![Python-CI](https://github.com/gbtami/pychess-variants/actions/workflows/ci.yml/badge.svg)](https://github.com/gbtami/pychess-variants/actions/workflows/ci.yml)
