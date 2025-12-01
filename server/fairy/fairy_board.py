@@ -431,19 +431,7 @@ class FairyBoard:
             return "8/8/8/8/8/8/%s w - - 0 1" % random.choice(RACINGKINGS_FENS)
 
         capa = variant in ("capablanca", "capahouse")
-        chess = variant == "chess"
         seirawan = variant in ("seirawan", "shouse")
-
-        if chess:
-            # shuffle rank 1 and 11
-            fendef = "uz7PU/jz7PJ/rz7PR/zz7PP/lzz5PPL/sz7PS/rz7PR/jz7PJ/uz7PU"
-            fens = fendef.split("/")
-            # shuffle first letter of each rank and then last letter of each rank
-            first_letters = [fens[i][0] for i in range(len(fens))]
-            random.shuffle(first_letters)
-            for i in range(len(fens)):
-                fens[i] = first_letters[i] + fens[i][1:-1] + first_letters[i].replace("z", "P").upper()
-            return "/".join(fens) + " w - - 0 1"
 
         if capa:
             rank8 = caparandom_rank8()
