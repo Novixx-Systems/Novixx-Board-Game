@@ -197,13 +197,13 @@ class FairyBoard:
                         return "WIN"
                     elif db == "LOSS":
                         return "LOSS"
-        except Exception:
+        except SystemError:
             try:
                 self.pop(remove=append)
             except Exception:
                 pass
             log.error("update_fen() failed on %s", traceback.format_exc())
-            raise
+            raise SystemError("Invalid move")
 
     def pop(self, remove=True):
         if remove:

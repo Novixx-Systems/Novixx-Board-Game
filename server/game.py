@@ -440,7 +440,7 @@ class Game:
                         if self.simulId is not None:
                             await self.app_state.simuls[self.simulId].game_update(self)
                         return
-                except Exception:
+                except SystemError:
                     self.board.fen = oldfen
                     # if vs Random-Mover, user loses
                     if self.wplayer.username == "Random-Mover" or self.bplayer.username == "Random-Mover":
@@ -451,6 +451,7 @@ class Game:
                         if self.simulId is not None:
                             await self.app_state.simuls[self.simulId].game_update(self)
                         return
+                    raise SystemError("invmov")
                     return
                 if self.board.fen == oldfen:
                     self.board.fen = oldfen
@@ -555,7 +556,8 @@ class Game:
 
 
 
-
+            except SystemError:
+                raise SystemError("invmov")
             except Exception:
                 log.exception("Exception in play_move()")
                 raise Exception("Invalid move %s" % move)

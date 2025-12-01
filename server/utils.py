@@ -608,8 +608,8 @@ async def play_move(app_state: PychessGlobalAppState, user, game, move, clocks=N
         except SystemError:
             invalid_move = True
             log.error("Invalid move %s" % move)
-            board_response = game.get_board(full=game.board.ply == 1, persp_color=play_color)
-            await user.send_game_message(gameId, board_response)
+            # board_response = game.get_board(full=game.board.ply == 1, persp_color=play_color)
+            # await user.send_game_message(gameId, board_response)
             return
     else:
         # never play moves in finished games!
