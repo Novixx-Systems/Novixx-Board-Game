@@ -1,4 +1,5 @@
 import random
+import chess
 from logger import log
 WHITE, BLACK = 0, 1
 
@@ -228,14 +229,27 @@ def check_drawback(oldfen: str, newfen: str, move: str, drawback: str) -> bool:
         return True
 
     if drawback == "knightmare":
-        # win when checking the opponent with a knight
+        # win when checking the opponent with a knight, lose when the opponent checks you with a knight
         board = FairyBoard("chess", oldfen)
+        checkboard = chess.Board(oldfen)
+        attacks = checkboard.attackers(not checkboard.turn, checkboard.king(checkboard.turn))
+        if attacks:
+            for square in attacks:
+                piece = checkboard.piece_at(square)
+                if piece.symbol().lower() == "n":
+                    return "LOSS"
+
         from_square = move[:2]
         to_square = move[2:4]
+        
         if board.piece_at(from_square, True) == "N":
-            board.push(move)
-            if board.is_checked():
-                return "WIN"
+            checkboard.push_uci(move)
+            attacks = checkboard.attackers(not checkboard.turn, checkboard.king(checkboard.turn))
+            if attacks:
+                for square in attacks:
+                    piece = checkboard.piece_at(square)
+                    if piece.symbol().lower() == "n":
+                        return "WIN"
         return True
 
     if drawback == "kingofthehill":
@@ -290,6 +304,16 @@ def check_drawback(oldfen: str, newfen: str, move: str, drawback: str) -> bool:
         if moveclock % 2 == 0 and num_legal_pawn_moves > 0:
             return board.piece_at(move[0:2], True) != "B" and board.piece_at(move[0:2], True) != "N"
 
+    if drawback == "catastrophe":
+        # you lose when you lose your queen(s)
+        board = FairyBoard("chess", oldfen)
+        mycolor = oldfen.split()[1]
+        queenchar = "q" if mycolor == "b" else "Q"
+        queen_positions = [i for i in range(64) if board.piece_at(i, False) == queenchar]
+        if len(queen_positions) == 0:
+            return "LOSS"
+
+        return True
 
     return True
 
@@ -307,8 +331,9 @@ DRAWBACK_DESCRIPTION = {
     "c5mover": "if any piece can go to c5, must move to c5",
     "evenpawn": "must move pawn if possible if move number is even (first move is odd)",
     "halfpawn": "lose when having 4 or less pawns",
-    "knightmare": "win when checking the opponent with a knight",
+    "knightmare": "win when checking the opponent with a knight, lose when the opponent does it to you",
     "kingofthehill": "lose if opponent's king is on the center",
     "unluckydice": "every time you get out of check, 1 in 6 chance you lose",
     "minorhate": "can't move minor pieces (Knight, Bishop) if move number is even (first move is odd)",
+    "catastrophe": "you lose when you lose your queen(s)",
 }
