@@ -6,6 +6,8 @@ https://nbg.novixx.com:8080/
 
 Certificate is untrusted (and thus the browser warning) (12/1/2025), will switch to cloudflare soon. You can obviously run it locally too.
 
+You can't donate to Novixx Systems (yet) but you can support the project that we based NBG on, PyChess (see below)
+
 # ORIGINAL PYCHESS README: START
 
 ## [www.pychess.org](https://www.pychess.org)
