@@ -1,3 +1,4 @@
+import random
 from logger import log
 WHITE, BLACK = 0, 1
 
@@ -259,6 +260,37 @@ def check_drawback(oldfen: str, newfen: str, move: str, drawback: str) -> bool:
                                     board.square_to_index("g5"), board.square_to_index("h5")]:
                 return "LOSS"
         return True
+
+    if drawback == "unluckydice":
+        # every time we get out of check, 1 in 6 chance it's a LOSS
+        board = FairyBoard("chess", oldfen)
+        mycolor = oldfen.split()[1]
+        if mycolor == "w":
+            opponent_color = "b"
+        else:
+            opponent_color = "w"
+        if board.is_checked():
+            if random.randint(0, 5) == 0:
+                return "LOSS"
+            else:
+                return True
+        return True
+    
+    if drawback == "minorhate":
+        # can't move minor (Knight, Bishop) pieces every 2 moves
+        board = FairyBoard("chess", oldfen)
+
+        moveclock = int(oldfen.split()[5]) # full move clock
+        legal_moves = board.legal_moves(None)
+        num_legal_pawn_moves = 0
+        for moveP in legal_moves:
+            if board.piece_at(moveP[0:2], True) != "B" and board.piece_at(moveP[0:2], True) != "N": 
+                num_legal_pawn_moves += 1
+        
+        if moveclock % 2 == 0 and num_legal_pawn_moves > 0:
+            return board.piece_at(move[0:2], True) != "B" and board.piece_at(move[0:2], True) != "N"
+
+
     return True
 
 DRAWBACK_DESCRIPTION = {
@@ -276,5 +308,7 @@ DRAWBACK_DESCRIPTION = {
     "evenpawn": "must move pawn if possible if move number is even (first move is odd)",
     "halfpawn": "lose when having 4 or less pawns",
     "knightmare": "win when checking the opponent with a knight",
-    "kingofthehill": "lose if opponent's king is on the center"
+    "kingofthehill": "lose if opponent's king is on the center",
+    "unluckydice": "every time you get out of check, 1 in 6 chance you lose",
+    "minorhate": "can't move minor pieces (Knight, Bishop) if move number is even (first move is odd)",
 }

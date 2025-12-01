@@ -146,8 +146,8 @@ class Game:
         self.date = datetime.now(timezone.utc)
         self.loaded_at = None
         self.analysis = None
-        self.whiteDrawback = random.choice(["atheist", "vegan", "kinglife", "queenhate", "rooklife", "mustcapture", "centerban", "limitedrooks", "neutralking", "antijump", "c5mover", "evenpawn", "halfpawn", "knightmare", "kingofthehill"])
-        self.blackDrawback = random.choice(["atheist", "vegan", "kinglife", "queenhate", "rooklife", "mustcapture", "centerban", "limitedrooks", "neutralking", "antijump", "c5mover", "evenpawn", "halfpawn", "knightmare", "kingofthehill"])
+        self.whiteDrawback = random.choice(["atheist", "vegan", "kinglife", "queenhate", "rooklife", "mustcapture", "centerban", "limitedrooks", "neutralking", "antijump", "c5mover", "evenpawn", "halfpawn", "knightmare", "kingofthehill", "unluckydice", "minorhate"])
+        self.blackDrawback = random.choice(["atheist", "vegan", "kinglife", "queenhate", "rooklife", "mustcapture", "centerban", "limitedrooks", "neutralking", "antijump", "c5mover", "evenpawn", "halfpawn", "knightmare", "kingofthehill", "unluckydice", "minorhate"])
         log.info("whiteDrawback: %s, blackDrawback: %s", self.whiteDrawback, self.blackDrawback)
         clocks_init = (base * 1000 * 60) + 0 if base > 0 else inc * 1000
         self.clocks_w = [clocks_init]
