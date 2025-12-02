@@ -63,8 +63,8 @@ async def lobby(request):
     context["title"] = "Novixx Board Game (Chess)"
     context["tournamentdirector"] = user.username in TOURNAMENT_DIRECTORS
 
-    puzzle = await get_daily_puzzle(request)
-    context["puzzle"] = json.dumps(puzzle, default=datetime.isoformat)
+    # puzzle = await get_daily_puzzle(request)
+    # context["puzzle"] = json.dumps(puzzle, default=datetime.isoformat)
 
     c_games = corr_games(user.correspondence_games)
     context["corr_games"] = json.dumps(c_games, default=datetime.isoformat)
