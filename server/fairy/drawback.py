@@ -315,6 +315,57 @@ def check_drawback(oldfen: str, newfen: str, move: str, drawback: str) -> bool:
 
         return True
 
+    if drawback == "rooklove":
+        # can only promote to rooks and queen moves 1 square othogonally
+        if move[-1] in ['q', 'b', 'n']:
+            return False
+
+        board = FairyBoard("chess", oldfen)
+        start_square = move[0:2]
+        end_square = move[2:4]
+
+        piece = board.piece_at(start_square, True)
+        if piece == 'Q':
+            # check distance between from_square and end_square (must be eithher -1, 1, 8 or -8 (orthogonal))
+            if board.square_to_index(from_square) - board.square_to_index(end_square) not in [-1, 1, 8, -8]:
+                return False
+
+        return True
+
+    if drawback == "pawnshield":
+        # can't move pieces to a square protected by an opponent's pawn
+        board = FairyBoard("chess", oldfen)
+        mycolor = oldfen.split()[1]
+        opponent_color = "b" if mycolor == "w" else "w"
+        to_square = move[2:4]
+        to_idx = board.square_to_index(to_square)
+        to_row, to_col = to_row_col(to_idx)
+
+        # check if opponent pawn attacks this square
+        if opponent_color == "w":
+            # white pawns attack diagonally up
+            attacking_squares = []
+            if to_col > 0:
+                attacking_squares.append((to_row + 1) * 8 + (to_col - 1))
+            if to_col < 7:
+                attacking_squares.append((to_row + 1) * 8 + (to_col + 1))
+        else:
+            # black pawns attack diagonally down
+            attacking_squares = []
+            if to_col > 0:
+                attacking_squares.append((to_row - 1) * 8 + (to_col - 1))
+            if to_col < 7:
+                attacking_squares.append((to_row - 1) * 8 + (to_col + 1))
+
+        for sq_idx in attacking_squares:
+            row, col = to_row_col(sq_idx)
+            if 0 <= row < 8 and 0 <= col < 8:
+                algebraic = chr(col + ord('a')) + str(8 - row)
+                if board.piece_at(algebraic, True) == ('P' if opponent_color == 'w' else 'p'):
+                    return False  # square is protected by opponent pawn
+        
+        return True
+
     return True
 
 DRAWBACK_DESCRIPTION = {
@@ -336,4 +387,6 @@ DRAWBACK_DESCRIPTION = {
     "unluckydice": "every time you get out of check, 1 in 6 chance you lose",
     "minorhate": "can't move minor pieces (Knight, Bishop) if move number is even (first move is odd)",
     "catastrophe": "you lose when you lose your queen(s)",
+    "rooklove": "can only promote to rooks and queen moves 1 square up, down, left and right",
+    "pawnshield": "can't move pieces to a square protected by an opponent's pawn",
 }

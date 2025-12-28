@@ -150,7 +150,7 @@ class Game:
                         "rooklife", "mustcapture", "centerban", "limitedrooks",
                         "neutralking", "antijump", "c5mover", "evenpawn",
                         "halfpawn", "knightmare", "kingofthehill","unluckydice",
-                        "minorhate", "catastrophe"]
+                        "minorhate", "catastrophe", "rooklove", "pawnshield"]
         self.whiteDrawback = random.choice(self.drawbacks)
         self.blackDrawback = random.choice(self.drawbacks)
         log.info("whiteDrawback: %s, blackDrawback: %s", self.whiteDrawback, self.blackDrawback)
