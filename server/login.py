@@ -137,6 +137,66 @@ async def bvb(state):
     await engine.event_queue.put(app_state.games[gameId].game_start)
     # redirect to the game
     return web.HTTPFound("/%s" % gameId)
+ip_limits = {} # ip: [timestamps of requests] (used for registration endpoint rate limiting)
+async def login_page(request):
+    # login without Novixx. used for testing and also for users who want to play without Novixx account
+    session = await aiohttp_session.get_session(request)
+
+    # check POST data for username and password
+    if request.method == "POST":
+        data = await request.post()
+        username = data.get("username", "").strip()
+        password = data.get("password", "").strip()
+        is_signup = "signup" in data
+
+        if not username or not password:
+            return web.Response(text="Username and password are required", content_type="text/html")
+
+        app_state = get_app_state(request.app)
+        user = await app_state.db.user.find_one({"_id": username})
+
+        if user is None and not is_signup:
+            return web.Response(text="Invalid username or password", content_type="text/html")
+        elif user is not None and is_signup:
+            return web.Response(text="Username already exists", content_type="text/html")
+        elif user is None and is_signup:
+            if request.remote in ip_limits:
+                ip_limits[request.remote] = [t for t in ip_limits[request.remote] if t > asyncio.get_event_loop().time() - 3600]
+                if len(ip_limits[request.remote]) > 0: # allow 1 registration per hour per IP
+                    return web.Response(text="Too many registrations from this IP, please try again later", content_type="text/html")
+            else:
+                ip_limits[request.remote] = []
+            ip_limits[request.remote].append(asyncio.get_event_loop().time())
+            # create new user
+            await app_state.db.user.insert_one(
+                {
+                    "_id": username,
+                    "title": "",
+                    "oauth_provider": hashlib.sha256(password.encode()).hexdigest(), # store password hash in oauth_provider field to prevent login with Novixx for this user
+                    "perfs": {},
+                    "pperfs": {},
+                    "enabled": True,
+                }
+            )
+            log.info("Created new user %s via username/password signup", username)
+        else:
+            # check password
+            if user.get("oauth_provider") != hashlib.sha256(password.encode()).hexdigest():
+                return web.Response(text="Invalid username or password", content_type="text/html")
+                
+
+        session["user_name"] = username
+        log.info("User %s logged in with username/password", username)
+        return web.HTTPFound("/")
+
+    # show login page HTML with option to login OR SIGN UP with username and password, or login with Novixx
+    return web.Response(text="<h1>Login without Novixx (beta)</h1><form method='post' action='/login'>"
+                             "<input type='text' name='username' placeholder='Username' required>"
+                             "<input type='password' name='password' placeholder='Password' required>"
+                             "<button type='submit' name='login'>Login</button>"
+                                "<button type='submit' name='signup'>Sign Up</button>"
+                             "</form>", content_type="text/html")
+
 
 async def login(request):
     session = await aiohttp_session.get_session(request)

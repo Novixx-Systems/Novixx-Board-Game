@@ -36,6 +36,7 @@ from utils import import_game, get_names, get_notifications, subscribe_notify, n
 from bug.import_bugh_game import import_game_bpgn
 from login import (
     login,
+    login_page,
     logout,
     oauth,
     select_username,
@@ -92,6 +93,7 @@ from views import (
 
 
 get_routes = (
+    ("/login", login_page),
     ("/login/{provider}", login),
     ("/oauth/{provider}", oauth),
     ("/logout", logout),
@@ -193,6 +195,7 @@ get_routes = (
 )
 
 post_routes = (
+    ("/login", login_page),
     ("/api/token/test", bot_token_test),
     ("/api/bot/game/{gameId}/abort", bot_abort),
     ("/api/bot/game/{gameId}/resign", bot_resign),
