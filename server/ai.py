@@ -67,7 +67,7 @@ async def BOT_task(bot, app_state: PychessGlobalAppState):
             },
             "time": monotonic(),
             "game_id": game.id,  # optional
-            "position": game.board.initial_fen,  # start position (X-FEN)
+            "position": game.board.fen,
             "variant": v,
             "chess960": game.chess960,
             "moves": " ".join(game.board.move_stack),  # moves of the game (UCI)

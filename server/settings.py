@@ -21,7 +21,7 @@ LICHESS_API_TOKEN = os.getenv("LICHESS_API_TOKEN")
 
 # secret_key for session encryption
 # key must be 32 url-safe base64-encoded bytes
-FERNET_KEY = os.getenv("FERNET_KEY", "")
+FERNET_KEY = base64.urlsafe_b64encode(os.urandom(32)).decode("utf-8")
 SECRET_KEY = base64.urlsafe_b64decode(FERNET_KEY)
 MAX_AGE = 3600 * 24 * 365
 

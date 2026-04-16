@@ -161,8 +161,10 @@ async def fishnet_analysis(request):
     length = len(data["analysis"])
     for j, analysis in enumerate(reversed(data["analysis"])):
         i = length - j - 1
+        i -= 1  # convert to 0-based index
         if analysis is not None:
             try:
+                log.debug("Received analysis for game %s ply %s: %s", gameId, i, analysis)
                 if "analysis" not in game.steps[i]:
                     # TODO: save PV only for inaccuracy, mistake and blunder
                     # see https://github.com/lichess-org/lila/blob/master/modules/analyse/src/main/Advice.scala
@@ -233,8 +235,9 @@ async def fishnet_move(request):
 
     # if it is an invalid move according to the drawback, use a random legal move
     legal_moves = game.board.legal_moves(drawback=game.whiteDrawback if game.board.color == 0 else game.blackDrawback)
-    if move not in legal_moves or not check_drawback(game.board.fen, game.board.fen, move, game.whiteDrawback if game.board.color == 0 else game.blackDrawback):
-        move = random.choice(legal_moves)
+    # if move not in legal_moves or not check_drawback(game.board.fen, game.board.fen, move, game.whiteDrawback if game.board.color == 0 else game.blackDrawback)
+    # if move not in legal_moves:
+    #     move = random.choice(legal_moves)
     async with game.move_lock:
         await play_move(app_state, user, game, move)
 

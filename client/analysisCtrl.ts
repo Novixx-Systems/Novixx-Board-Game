@@ -406,14 +406,6 @@ export class AnalysisController extends GameController {
             updateMovelist(this);
 
             if (this.steps[0].analysis === undefined) {
-                if (!this.isAnalysisBoard && !this.embed) {
-                    const el = document.getElementById('request-analysis') as HTMLElement;
-                    el.style.display = 'flex';
-                    patch(el, h('div#request-analysis', [h('button.request-analysis', { on: { click: () => this.drawAnalysisChart(true) } }, [
-                        h('i', {props: {title: _('Request Computer Analysis')}, class: {"icon": true, "icon-bar-chart": true} }, _('Request Analysis'))])
-                        ])
-                    );
-                }
             } else {
                 this.vinfo = patch(this.vinfo, h('info#info', '-'));
                 this.drawAnalysisChart(false);
@@ -737,6 +729,10 @@ export class AnalysisController extends GameController {
         this.fsfPostMessage('isready');
     }
 
+    currentPly() {
+        return (this.plyVari > 0) ? this.plyInsideVari : this.ply;
+    }
+
     engineGo = () => {
 
         if (this.chess960) {
@@ -757,11 +753,8 @@ export class AnalysisController extends GameController {
         this.fsfPostMessage('setoption name Threads value ' + this.threads);
 
         this.fsfPostMessage('setoption name MultiPV value ' + this.multipv);
-
-        let position: string = 'position fen ' + this.fullfen;
-        if (this.UCImovelist.length > 0) {
-            position = 'position fen ' + this.steps[0].fen + ' moves ' + this.UCImovelist.join(' ');
-        }
+        
+        let position: string = 'position fen ' + this.steps[this.currentPly()].fen;
         this.fsfPostMessage(position);
 
         if (this.maxDepth >= 99) {

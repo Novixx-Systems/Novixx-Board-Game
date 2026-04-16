@@ -4,6 +4,7 @@ import collections
 from datetime import datetime, timezone, timedelta
 from time import monotonic
 from typing import Set, List
+import traceback
 import random
 
 from broadcast import round_broadcast
@@ -44,7 +45,7 @@ if TYPE_CHECKING:
     from pychess_global_app_state import PychessGlobalAppState
     from user import User
 
-MAX_PLY = 600
+MAX_PLY = 900
 
 INVALID_PAWN_DROP_MATE = (
     ("P@", "shogi"),
@@ -54,6 +55,11 @@ INVALID_PAWN_DROP_MATE = (
     ("S@", "torishogi"),
 )
 
+def string_to_seed(s):
+    seed = 0
+    for c in s:
+        seed = (seed * 31 + ord(c)) % (2**32) # max 2^32 for JavaScript compatibility!
+    return seed
 
 class Game:
     def __init__(
@@ -146,11 +152,7 @@ class Game:
         self.date = datetime.now(timezone.utc)
         self.loaded_at = None
         self.analysis = None
-        self.drawbacks = ["atheist", "vegan", "kinglife", "queenhate",
-                        "rooklife", "mustcapture", "centerban", "limitedrooks",
-                        "neutralking", "antijump", "c5mover", "evenpawn",
-                        "halfpawn", "knightmare", "kingofthehill","unluckydice",
-                        "minorhate", "catastrophe", "rooklove", "pawnshield"]
+        self.drawbacks = ["normal"]
         self.whiteDrawback = random.choice(self.drawbacks)
         self.blackDrawback = random.choice(self.drawbacks)
         log.info("whiteDrawback: %s, blackDrawback: %s", self.whiteDrawback, self.blackDrawback)
@@ -320,6 +322,199 @@ class Game:
 
         await self.app_state.db.game.find_one_and_update({"_id": self.id}, {"$set": new_data})
 
+    def do_effect(self, seed, cur_color=None, v=2):
+        sr = random.Random(seed)
+        oldfen = self.board.fen
+        if self.board.ply > 0 and self.board.ply % 3 == 0:
+            effects = ["swap_pieces", "add_random_piece", "remove_random_piece", "spawn_big_pawn_wall", "spawn_small_pawn_wall", "great_reset", "fog_of_war", "stop_fog_of_war"]
+            # max 32 pieces on the board, so if there are already 32 pieces, don't add more, just swap or remove
+            if sum(1 for c in self.board.fen.replace("/", "").split()[0] if c.isalpha()) >= 32:
+                effects.remove("add_random_piece")
+            # if only kings are left, don't remove pieces, just swap or add
+            if sum(1 for c in self.board.fen.replace("/", "").split()[0] if c.isalpha() and c not in ("K", "k")) == 0:
+                effects.remove("remove_random_piece")
+            # if there are more than 0 pawns on the board, we can remove spawn_pawn_wall effect
+            if sum(1 for c in self.board.fen if c in ("P", "p")) > 0:
+                effects.remove("spawn_big_pawn_wall")
+            # small pawn wall can be spawned if there <= 8 pawns on the board, because it spawns 8 pawns (4 for each side)
+            if sum(1 for c in self.board.fen if c in ("P")) > 4 or sum(1 for c in self.board.fen if c in ("p")) > 4:
+                effects.remove("spawn_small_pawn_wall")
+            if v >= 2:
+                if self.fow or sr.choice([True, False, True]):
+                    effects.remove("fog_of_war")
+                elif not self.fow:
+                    effects.remove("stop_fog_of_war")
+            else:
+                 if self.fow:
+                    effects.remove("fog_of_war")
+                 elif not self.fow:
+                    effects.remove("stop_fog_of_war")
+            # great reset has 1 in 100 chance to even have a chance to happen, because it can be very disruptive, so we check for it before other effects
+            if sr.randint(1, 100) != 1:
+                effects.remove("great_reset")
+            # if king is in center 4 ranks, don't spawn pawn wall because it can cause invalid position, just swap or remove or add piece
+            king_in_center = True
+            current_rank = self.board.fen.split()[0].split("/").index(next(r for r in self.board.fen.split()[0].split("/") if "K" in r or "k" in r))
+            if current_rank < 2 or current_rank > 5:
+                king_in_center = False
+            if king_in_center and ("spawn_big_pawn_wall" in effects or "spawn_small_pawn_wall" in effects):
+                if "spawn_big_pawn_wall" in effects:
+                    effects.remove("spawn_big_pawn_wall")
+                if "spawn_small_pawn_wall" in effects:
+                    effects.remove("spawn_small_pawn_wall")
+            effect = sr.choice(effects)
+            if sr.randint(1, 100) <= 1:
+                effect = "great_reset"
+            log.info("Applying random effect: %s", effect)
+            if effect == "fog_of_war":
+                self.fow = True
+            elif effect == "stop_fog_of_war":
+                self.fow = False
+            elif effect == "swap_pieces":
+                log.info("Before swap_pieces: %s", self.board.fen)
+                while True:
+                    # swap position of 2 random pieces on the board, that do not result in an illegal position
+                    pieces = [c for c in self.board.fen if c.isalpha()]
+                    if len(pieces) >= 2:
+                        piece1, piece2 = sr.sample(pieces, 2)
+                        self.board.fen = self.board.fen.replace(piece1, "X").replace(piece2, piece1).replace("X", piece2)
+                    if self.board.is_valid():
+                        break
+                    else:
+                        self.board.fen = oldfen
+            elif effect == "great_reset":
+                # reset the board to the initial position, but keep the move history and clocks, and update the status accordingly, so if it was white to move before reset, it should still be white to move after reset, and if it was black to move before reset, it should still be black to move after reset
+                log.info("Before great_reset: %s", self.board.fen)
+                # choose random opening position from the list of 20 most popular openings in chess.com explorer, and set the board to that position, but keep the move history and clocks
+                openings = [
+                    "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1", # starting position
+                    "rnbqkbnr/ppp1pppp/8/3p4/3P1B2/8/PPP1PPPP/RN1QKBNR b KQkq - 1 2", # London system
+                    "rnbqkbnr/pppppppp/8/8/8/5N2/PPPPPPPP/RNBQKB1R b KQkq - 1 1", # Reti opening
+                    "rnbqkbnr/ppp1pppp/8/3p4/2PP4/8/PP2PPPP/RNBQKBNR b KQkq c3 0 2", # Queen's gambit
+                    "r1bqkbnr/pppp1p1p/2n3p1/4p2Q/2B1P3/8/PPPP1PPP/RNB1K1NR w KQkq - 0 4", # Scholar's mate (almost)
+                    "r1bqk1nr/pppp1ppp/2n5/2b1p3/2B1P3/3P1N2/PPP2PPP/RNBQK2R b KQkq - 0 4", # Giuoco Pianissimo
+                ]
+                self.board.fen = sr.choice(openings)
+                # fix side to move
+                fen_parts = self.board.fen.split()
+                fen_parts[1] = "w" if self.board.color == WHITE else "b"
+                self.board.fen = " ".join(fen_parts)
+                if not self.board.is_valid():
+                    self.board.fen = oldfen
+                log.info("After great_reset: %s", self.board.fen)
+            elif effect == "spawn_big_pawn_wall":
+                # spawn a wall of on center.
+                # if center is occupied, we replace the piece with a pawn, but if it is occupied by a king, we don't spawn the wall because it can cause invalid position
+                log.info("Before spawn_big_pawn_wall: %s", self.board.fen)
+                # replace 2 center parts of fen with pawns
+                fen_parts = self.board.fen.split()
+                OLDFEN = self.board.fen
+                board_part = fen_parts[0].split("/")
+                for i in range(3, 5):
+                    if "K" in board_part[i] or "k" in board_part[i]:
+                        # don't spawn wall if king is in the way
+                        break
+                else:
+                    board_part[3] = "p" * 8
+                    board_part[4] = "P" * 8
+                    fen_parts[0] = "/".join(board_part)
+                    self.board.fen = " ".join(fen_parts)
+                if not self.board.is_valid():
+                    self.board.fen = OLDFEN
+            elif effect == "spawn_small_pawn_wall":
+                # spawn a wall of 4 pawns on center, 2 for each side.
+                # if center is occupied, we replace the piece with a pawn, but if it is occupied by a king, we don't spawn the wall because it can cause invalid position
+                log.info("Before spawn_small_pawn_wall: %s", self.board.fen)
+                fen_parts = self.board.fen.split()
+                board_part = fen_parts[0].split("/")
+                for i in range(3, 5):
+                    if "K" in board_part[i] or "k" in board_part[i]:
+                        # don't spawn wall if king is in the way
+                        break
+                else:
+                    for i in range(3, 5):
+                        row = list(board_part[i])
+                        row = "3pp3" if i == 3 else "3PP3"
+                        board_part[i] = "".join(row)
+                    fen_parts[0] = "/".join(board_part)
+                    self.board.fen = " ".join(fen_parts)
+                if not self.board.is_valid():
+                    self.board.fen = oldfen
+            elif effect == "add_random_piece":
+                attempt = 0
+                while True:
+                    piece = sr.choice("NBRNBQnbrnbq")
+                    empty_squares = [i for i, c in enumerate(self.board.fen) if c.isdigit()]
+                    if empty_squares:
+                        # note that we need to reset the fen numerals, so if we put a piece on a square with "3", it should become "2" after adding the piece
+                        square = sr.choice(empty_squares)
+                        # decide whether to add it to the left or right.
+                        left = sr.choice([True, False])
+                        square -= 1 if left else 0
+                        fen_list = list(self.board.fen)
+                        if fen_list[square].isdigit():
+                            fen_list[square] = str(int(fen_list[square]) - 1)
+                        fen_list.insert(square + 1, piece)
+                        self.board.fen = "".join(fen_list)
+                    if self.board.is_valid():
+                        break
+                    else:
+                        attempt += 1
+                        if attempt >= 500:
+                            break
+                        self.board.fen = oldfen
+            elif effect == "remove_random_piece":
+                while True:
+                    # pieces = [i for i, c in enumerate(self.board.fen) if c.isalpha()]
+                    # if pieces:
+                    #     square = random.choice(pieces)
+                    #     fen_list = list(self.board.fen)
+                    #     if fen_list[square].isalpha() and fen_list[square] != "K" and fen_list[square] != "k":
+                    #         fen_list[square] = "1"
+                    #         # after replacing with "1", we need to merge with adjacent numerals, so "3" "1" "2" should become "6"
+                    #         left = square - 1
+                    #         while left >= 0 and fen_list[left].isdigit():
+                    #             fen_list[left] = str(int(fen_list[left]) + 1)
+                    #             left -= 1
+                    #         right = square + 1
+                    #         while right < len(fen_list) and fen_list[right].isdigit():
+                    #             fen_list[right] = str(int(fen_list[right]) + 1)
+                    #             right += 1
+                    #     else:
+                    #         continue
+                    #     self.board.fen = "".join(fen_list)
+                    # if self.board.is_valid():
+                    #     break
+                    # else:
+                    #     self.board.fen = oldfen
+                    pieces = [c for c in self.board.fen.replace("/", "") if c.isalpha() and c.lower() != "k"]
+                    if pieces:
+                        piece = sr.choice(pieces)
+                        self.board.fen = self.board.fen.replace(piece, "1", 1)
+                        # after replacing with "1", we need to merge with adjacent numerals, so "3" "1" "2" should become "6"
+                        fen_list = list(self.board.fen)
+                        for i in range(len(fen_list)):
+                            if fen_list[i].isdigit():
+                                num = int(fen_list[i])
+                                j = i + 1
+                                while j < len(fen_list) and fen_list[j].isdigit():
+                                    num += int(fen_list[j])
+                                    fen_list[j] = ""
+                                    j += 1
+                                fen_list[i] = str(num)
+                        self.board.fen = "".join(fen_list)
+                    if self.board.is_valid():
+                        break
+                    else:
+                        self.board.fen = oldfen
+            # swap turn after random effect
+            # only if it hasn't been done already.
+            if self.board.color == cur_color:
+                self.board.color = BLACK if self.board.color == WHITE else WHITE
+                self.board.fen = self.board.fen.replace(" w ", " x ").replace(" b ", " w ").replace(" x ", " b ")
+            log.info("After random effect: %s", self.board.fen)
+
+
     async def play_move(self, move, clocks=None, ply=None):
         self.stopwatch.stop()
 
@@ -427,6 +622,28 @@ class Game:
                     self.clocks_b.append(clocks[BLACK])
 
                 oldfen = self.board.fen
+                # if move captures king, we win
+                if self.board.is_capture(move):
+                    if cur_color == WHITE:
+                        if self.board.piece_at(move[2:]) == "k":
+                            self.board.fen = oldfen
+                            self.update_status(MATE, "1-0")
+                            await self.save_game()
+                            if self.corr:
+                                await opp_player.notify_game_end(self)
+                            if self.simulId is not None:
+                                await self.app_state.simuls[self.simulId].game_update(self)
+                            return
+                    else:
+                        if self.board.piece_at(move[2:]) == "K":
+                            self.board.fen = oldfen
+                            self.update_status(MATE, "0-1")
+                            await self.save_game()
+                            if self.corr:
+                                await opp_player.notify_game_end(self)
+                            if self.simulId is not None:
+                                await self.app_state.simuls[self.simulId].game_update(self)
+                            return
                 try:
                     result = self.board.push(move, drawback=self.whiteDrawback if self.board.color == WHITE else self.blackDrawback)
                     if result == "WIN":
@@ -456,7 +673,6 @@ class Game:
                         if self.simulId is not None:
                             await self.app_state.simuls[self.simulId].game_update(self)
                         return
-                    raise SystemError("invmov")
                     return
                 if self.board.fen == oldfen:
                     self.board.fen = oldfen
@@ -468,65 +684,17 @@ class Game:
 
                 self.update_status()
 
-                if self.status > STARTED:
-                    await self.save_game()
-                    if self.corr:
-                        await opp_player.notify_game_end(self)
-                    if self.simulId is not None:
-                        await self.app_state.simuls[self.simulId].game_update(self)
-                else:
-                    await self.save_move(move)
-
-                self.steps.append(
-                    {
-                        "fen": self.board.fen,
-                        "move": move,
-                        "san": san,
-                        "turnColor": "black" if self.board.color == BLACK else "white",
-                        "check": self.check,
-                        "clocks": clocks,
-                    }
-                )
-                self.stopwatch.restart()
-
-                await asyncio.sleep(0.3)
-                self.legal_moves = self.board.legal_moves(drawback=self.whiteDrawback if self.board.color == WHITE else self.blackDrawback)
-                if len(self.legal_moves) == 0:
-                    # if in check, win for the side that checks
-                    if self.board.is_checked():
-                        self.update_status(MATE, "0-1" if self.board.color == WHITE else "1-0")
-                        await self.save_game()
-                        if self.corr:
-                            await opp_player.notify_game_end(self)
-                        if self.simulId is not None:
-                            await self.app_state.simuls[self.simulId].game_update(self)
-                        return
+                # random effect every 3rd move for testing drawback handling
+                # if it is chekmate don't apply random effect, just end the game
+                # seed by game id and ply, so it is deterministic for each move in a game, but different between moves and games
+                if self.board.has_legal_move():
+                    if self.board.ply > 0 and self.board.ply % 3 == 0:
+                        self.do_effect(seed=string_to_seed(self.id) + self.board.ply, cur_color=cur_color)
+                    # check for game over after random effect
+                    if self.board.has_legal_move():
+                        self.update_status()
                     else:
-                        self.update_status(STALEMATE, "1/2-1/2")
-                        await self.save_game()
-                        if self.corr:
-                            await opp_player.notify_game_end(self)
-                        if self.simulId is not None:
-                            await self.app_state.simuls[self.simulId].game_update(self)
-                        return
-
-                if self.wplayer.username == "Random-Mover" or self.bplayer.username == "Random-Mover":
-                    self.board.color = WHITE if self.wplayer.username == "Random-Mover" else BLACK
-
-                if (self.wplayer.username == "Random-Mover" and self.board.color == WHITE) or (self.bplayer.username == "Random-Mover" and self.board.color == BLACK):
-                    self.legal_moves = self.board.legal_moves(drawback=self.whiteDrawback if self.board.color == WHITE else self.blackDrawback)
-                    random.shuffle(self.legal_moves)
-                    doneMove = False
-                    for move in self.legal_moves:
-                        try:
-                            self.board.push(move)
-                            doneMove = True
-                            break
-                        except Exception:
-                            continue
-                    if not doneMove:
-                        # if in check, win for the side that checks
-                        if self.check:
+                        if self.board.is_checked():
                             self.update_status(MATE, "0-1" if self.board.color == WHITE else "1-0")
                             await self.save_game()
                             if self.corr:
@@ -542,30 +710,32 @@ class Game:
                             if self.simulId is not None:
                                 await self.app_state.simuls[self.simulId].game_update(self)
                             return
-                    san = self.board.get_san(move)
-                    self.lastmove = move
-                    if cur_color == WHITE:
-                        self.clocks_w.append(clocks[WHITE])
-                    else:
-                        self.clocks_b.append(clocks[BLACK])
-                    self.steps.append(
-                        {
-                            "fen": self.board.fen,
-                            "move": move,
-                            "san": san,
-                            "turnColor": "black" if self.board.color == BLACK else "white",
-                            "check": self.check,
-                            "clocks": clocks,
-                        }
-                    )
 
 
 
-            except SystemError:
-                raise SystemError("invmov")
+                self.steps.append(
+                    {
+                        "fen": self.board.fen,
+                        "move": move,
+                        "san": san,
+                        "turnColor": "black" if self.board.color == BLACK else "white",
+                        "check": self.check,
+                        "clocks": clocks,
+                    }
+                )
+                if self.status > STARTED:
+                    await self.save_game()
+                    if self.corr:
+                        await opp_player.notify_game_end(self)
+                    if self.simulId is not None:
+                        await self.app_state.simuls[self.simulId].game_update(self)
+                else:
+                    await self.save_move(move)
+
+
             except Exception:
                 log.exception("Exception in play_move()")
-                raise Exception("Invalid move %s" % move)
+                raise Exception("Invalid move %s %s" % (move, traceback.format_exc()))
 
     async def save_move(self, move):
         self.last_move_time = datetime.now(timezone.utc)
@@ -846,6 +1016,8 @@ class Game:
             return
 
         def result_string_from_value(color, game_result_value):
+            if isinstance(game_result_value, str):
+                return game_result_value
             if game_result_value < 0:
                 return "1-0" if color == BLACK else "0-1"
             if game_result_value > 0:
@@ -865,18 +1037,16 @@ class Game:
         if self.board.move_stack:
             self.check = self.board.is_checked()
 
-        w, b = self.board.insufficient_material()
-        if w and b:
-            self.status = DRAW
-            self.result = "1/2-1/2"
+        # w, b = self.board.insufficient_material()
+        # if w and b:
+        #     self.status = DRAW
+        #     self.result = "1/2-1/2"
 
         if not self.has_legal_move:
             game_result_value = self.board.game_result()
             self.result = result_string_from_value(self.board.color, game_result_value)
 
-            if self.board.is_immediate_game_end()[0]:
-                self.status = VARIANTEND
-            elif self.check:
+            if self.check:
                 self.status = MATE
 
                 if self.variant == "atomic" and game_result_value == 0:
@@ -1176,6 +1346,7 @@ class Game:
 
         self.board.fen = self.board.initial_fen
         self.board.color = WHITE if self.board.fen.split()[1] == "w" else BLACK
+        tempboard = FairyBoard("chess", self.board.initial_fen)
         for ply, move in enumerate(self.board.move_stack):
             try:
                 if self.mct is not None:
@@ -1206,6 +1377,23 @@ class Game:
                         san = "%s=%s" % (san, new_piece.lower())
 
                 self.board.push(move, append=False)
+                tempboard.push(move, append=True)
+
+                log.debug("create_steps() pushed move %s, ply %d, color %s", move, ply, "black" if self.board.color == BLACK else "white")
+                
+                # effect handling for steps creation, needed for analysis and spectators to see correct board state after each move
+                if tempboard.has_legal_move() and tempboard.ply > 0 and tempboard.ply % 3 == 0:
+                    log.debug("create_steps() applying effect for ply %d", tempboard.ply)
+                    # after 2026/4/16 8:11 UTC+2, effects are v2. so we use v=1 for older games.
+                    if self.date < datetime(2026, 4, 16, 6, 11, tzinfo=timezone.utc):
+                        log.debug("create_steps() applying v1 effect for game date %s", self.date)
+                        self.do_effect(seed=string_to_seed(self.id) + tempboard.ply, cur_color=WHITE if tempboard.color == BLACK else BLACK, v=1)
+                    else:
+                        log.debug("create_steps() applying v2 effect for game date %s", self.date)
+                        self.do_effect(seed=string_to_seed(self.id) + tempboard.ply, cur_color=WHITE if tempboard.color == BLACK else BLACK, v=2)
+
+                tempboard.fen = self.board.fen
+
                 self.check = self.board.is_checked()
                 turnColor = "black" if self.board.color == BLACK else "white"
 

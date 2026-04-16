@@ -108,7 +108,6 @@ export function analysisView(model: PyChessModel): VNode[] {
 
     let tabs = [];
     if (!isOngoingGame) {
-        tabs.push(h('span', {attrs: {role: 'tab', 'aria-selected': false, 'aria-controls': 'panel-1', id: 'tab-1', tabindex: '-1'}}, _('Computer analysis')));
         if (model.rated === "1") {
             tabs.push(h('span', {attrs: {role: 'tab', 'aria-selected': true, 'aria-controls': 'panel-2', id: 'tab-2', tabindex: '-1'}}, _('Move times')))
         }

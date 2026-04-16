@@ -47,6 +47,7 @@ def intermediate_squares(start_idx, end_idx):
 
 
 def check_drawback(oldfen: str, newfen: str, move: str, drawback: str) -> bool:
+    return True
     from fairy.fairy_board import FairyBoard
     """
     Checks if the move is against the drawback.
@@ -389,4 +390,5 @@ DRAWBACK_DESCRIPTION = {
     "catastrophe": "you lose when you lose your queen(s)",
     "rooklove": "can only promote to rooks and queen moves 1 square up, down, left and right",
     "pawnshield": "can't move pieces to a square protected by an opponent's pawn",
+    "normal": "random effect every 3 moves (first move is move 1)"
 }

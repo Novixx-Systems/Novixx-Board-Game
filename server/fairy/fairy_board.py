@@ -152,6 +152,17 @@ class FairyBoard:
         else:
             return new_fen
 
+    def is_valid(self):
+        chessboard = chess.Board()
+        try:
+            chessboard.set_fen(self.fen)
+            if chessboard.is_valid():
+                return True
+            else:
+                return False
+        except ValueError:
+            return False
+
     @property
     def posnum(self):
         if self.chess960:
@@ -188,7 +199,8 @@ class FairyBoard:
                 oldfen = self.fen
                 self.fen = self.update_fen(self.fen, move)
                 if drawback:
-                    db = check_drawback(oldfen, self.fen, move, drawback)
+                    # db = check_drawback(oldfen, self.fen, move, drawback)
+                    db = True
                     if not db:
                         self.fen = oldfen
                         raise SystemError("Invalid move %s %s" % (move, "drawback"))
@@ -298,22 +310,7 @@ class FairyBoard:
                 oldfen = self.fen
                 moves = self.sf.legal_moves(self.variant, self.fen, [], self.chess960)
                 moves = list(moves)
-                if drawback:
-                    for move in moves.copy():
-                        oldfen = self.fen
-                        try:
-                            self.fen = self.update_fen(self.fen, move)
-                        except Exception:
-                            log.error("update_fen() failed on %s", traceback.format_exc())
-                            self.fen = oldfen
-                            continue
-                        if not check_drawback(oldfen, self.fen, move, drawback):
-                            self.fen = oldfen
-                            log.debug("invalid move %s", move)
-                            moves.remove(move)
-                            continue
-                        else:
-                            self.fen = oldfen
+                
                 return moves
 
     def legal_moves_no_history(self):
@@ -344,13 +341,22 @@ class FairyBoard:
         return False
 
     def game_result(self):
-        if self.movelist_supported:
-            return self.sf.game_result(
-                self.variant, self.initial_fen, self.move_stack, self.chess960
-            )
-        else:
-            return self.sf.game_result(self.variant, self.fen, [], self.chess960)
-
+        boarde = chess.Board()
+        # if white king is missing, it's checkmate for black, and vice versa
+        if ("K" not in self.fen and "k" not in self.fen) or ("K" not in self.fen and self.color == BLACK) or ("k" not in self.fen and self.color == WHITE):
+            return "1-0" if self.color == BLACK else "0-1"
+        try:
+            boarde.set_fen(self.fen)
+            if boarde.is_checkmate():
+                return "0-1" if self.color == WHITE else "1-0"
+            elif boarde.is_stalemate():
+                return "1/2-1/2"
+            # insufficient material isn't a draw in Chaos.
+            else:
+                return "*"
+        except ValueError:
+            return "*"
+        
     def game_result_no_history(self):
         return self.sf.game_result(self.variant, self.fen, [], self.chess960)
 

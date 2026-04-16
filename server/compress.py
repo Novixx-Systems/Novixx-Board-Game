@@ -105,3 +105,9 @@ def decode_move_duck(move):
 
 def decode_move_standard(move):
     return C2M[ord(move[0])] + C2M[ord(move[1])] + (move[2] if len(move) == 3 else "")
+
+if __name__ == "__main__":
+    # print(decode_move_standard(open("encoded_moves.txt").read()))
+    moves = open("encoded_moves.txt").read().split(",")
+    for move in moves:
+        print(move, decode_move_standard(move))

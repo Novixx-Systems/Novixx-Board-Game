@@ -5,6 +5,7 @@ import json
 
 from const import TYPE_CHECKING
 
+import traceback
 import random
 from datetime import date, datetime, timezone, timedelta
 from functools import partial
@@ -152,7 +153,8 @@ async def load_game(app_state: PychessGlobalAppState, game_id):
     game.usi_format = usi_format
 
     decode_method = game.server_variant.move_decoding
-    mlist = [*map(decode_method, doc["m"])]
+    mlistdoc = doc.get("m", [])
+    mlist = [decode_method(m) for m in mlistdoc] if mlistdoc else []
 
     if (mlist or game.tournamentId is not None) and doc["s"] > STARTED:
         game.saved = True
@@ -218,6 +220,7 @@ async def load_game(app_state: PychessGlobalAppState, game_id):
             game.draw_offers.add(game.bplayer.username)
 
     if len(mlist) > 0:
+        log.debug("load_game() moves: %s", json.dumps(mlist))
         game.board.move_stack = mlist
         game.board.fen = doc["f"]
         game.board.ply = len(mlist)
@@ -607,7 +610,7 @@ async def play_move(app_state: PychessGlobalAppState, user, game, move, clocks=N
             await game.play_move(move, clocks, ply)
         except SystemError:
             invalid_move = True
-            log.error("Invalid move %s" % move)
+            log.error("Invalid move %s %s" % (move, traceback.format_exc()), stack_info=True)
             # board_response = game.get_board(full=game.board.ply == 1, persp_color=play_color)
             # await user.send_game_message(gameId, board_response)
             return

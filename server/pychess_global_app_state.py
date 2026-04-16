@@ -109,7 +109,7 @@ async def every_10_minutes_bvb(app_state: PychessGlobalAppState):
     while True:
         await bvb(app_state)
         log.info("Created bvb game")
-        await asyncio.sleep(500)
+        await asyncio.sleep(300)
 
 async def generate_puzzles(app_state: PychessGlobalAppState):
     await asyncio.sleep(5)

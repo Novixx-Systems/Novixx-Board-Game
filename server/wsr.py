@@ -325,7 +325,7 @@ async def handle_analysis(app_state: PychessGlobalAppState, ws, data, game):
             # },
             "username": data["username"],
             "game_id": data["gameId"],  # optional
-            "position": game.board.initial_fen,  # start position (X-FEN)
+            "position": game.board.fen,  # optional, but if not sent, then the worker will have to load the game to get it, so better to send it
             "variant": game.variant,
             "chess960": game.chess960,
             "moves": " ".join(game.board.move_stack),  # moves of the game (UCI)

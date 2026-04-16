@@ -30,3 +30,4 @@ server.log
 docker-compose.yaml
 server.crt
 server.key
+server/oauth_config.py
