@@ -20,7 +20,7 @@ from websocket_utils import ws_send_json
 from logger import log
 from newid import new_id
 import asyncio
-
+import re
 
 async def oauth(request):
     """Get oauth token with PKCE"""
@@ -146,6 +146,12 @@ async def login_page(request):
     if request.method == "POST":
         data = await request.post()
         username = data.get("username", "").strip()
+        if not re.match(r"^[a-zA-Z0-9_-]+$", username):
+            return web.Response(text="Username can only contain letters, numbers, _ and -", content_type="text/html")
+        if reserved(username):
+            return web.Response(text="Username is reserved", content_type="text/html")
+        if len(username) < 3 or len(username) > 21:
+            return web.Response(text="Username must be between 3 and 21 characters", content_type="text/html")
         password = data.get("password", "").strip()
         is_signup = "signup" in data
 
